@@ -42,30 +42,37 @@ committed.
 
 `vite.config.ts` reads `SITE_BASE` and Vite exposes it to the app as
 `import.meta.env.BASE_URL`; `src/App.tsx` hands the same value to the wouter
-router. The deploy workflow currently sets:
+router. The deploy workflow sets it for the target:
 
-```yaml
-env:
-  SITE_BASE: /isco-website/
-```
-
-That value matches **preview hosting as a GitHub Pages project site**, where the
-site lives at `https://SitesFoundry.github.io/isco-website/`. When the custom
-domain serves the site from the domain root, change it to:
-
-```yaml
-env:
-  SITE_BASE: /
-```
+| Serving context | `SITE_BASE` |
+| --- | --- |
+| Custom domain, from the domain root | `/` |
+| GitHub Pages project-site preview (`/isco-website/`) | `/isco-website/` |
 
 Nothing else needs to change. Asset paths built through `src/lib/asset.ts` and
-the router base both follow this one value, so the two can never disagree.
+the router base both follow this one value, so the two can never disagree. If
+the preview URL is ever needed again, set `SITE_BASE: /isco-website/` and
+redeploy.
 
 ### Custom domain
 
-To attach `www.iscogmbh.com`: add a `CNAME` file at the repository root
-containing `www.iscogmbh.com`, set the domain under `Settings → Pages`, and
-point DNS at GitHub. DNS for this domain is managed at Cloudflare.
+Set it under `Settings → Pages → Custom domain`, then point DNS at GitHub.
+
+**Do not add a `CNAME` file.** It is ignored when the site is published by a
+GitHub Actions workflow, and GitHub does not create or require one for this
+publishing source. The setting in the repository is what counts.
+
+DNS for this domain is managed at Cloudflare, and the records must be
+**DNS only (grey cloud)**, not proxied, so that GitHub can provision the TLS
+certificate itself:
+
+| Type | Name | Value |
+| --- | --- | --- |
+| CNAME | `www` | `sitesfoundry.github.io` |
+| A | `@` | `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` |
+
+With records for both the apex and `www`, GitHub redirects the apex to
+`www.iscogmbh.com`.
 
 ## Deep links and `404.html`
 

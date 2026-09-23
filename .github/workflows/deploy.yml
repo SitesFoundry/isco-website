@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SITE_BASE: /isco-website/
+  SITE_BASE: /
 
 jobs:
   build:
