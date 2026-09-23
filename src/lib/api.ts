@@ -14,7 +14,7 @@
  * was registered to, so register it against the inbox that should receive
  * enquiries (sales@iscogmbh.com).
  */
-export const FORMSPREE_ENDPOINT = "";
+export const FORMSPREE_ENDPOINT = "https://formspree.io/f/mzezgbwe";
 
 export interface ContactFormData {
   name: string;
