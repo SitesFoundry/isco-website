@@ -1,0 +1,21 @@
+{
+  "name": "ISCO GmbH - Solar & HVAC Solutions",
+  "short_name": "ISCO GmbH",
+  "description": "Leading provider of Solar and HVAC solutions in Europe",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9f7f2",
+  "theme_color": "#1a5c3a",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
