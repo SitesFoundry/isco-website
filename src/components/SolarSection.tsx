@@ -2,26 +2,42 @@ import { asset } from "@/lib/asset";
 /*
  * Design: Nordic Clean Energy — Scandinavian Functionalism
  * Solar: Cards with warm gold accents, organic layout
+ *
+ * The six cards are generated from SOLAR_CATEGORIES so the home page grid and
+ * the navigation dropdown cannot drift apart. Each one links to its category
+ * page — see src/data/solarProducts.ts.
  */
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Link } from 'wouter';
 import { motion } from 'framer-motion';
 import { useInView } from '@/hooks/useInView';
-import { Sun, Zap, BatteryCharging, Home, Cable, Lightbulb } from 'lucide-react';
+import { Sun, Zap, BatteryCharging, Home, Cable, Lightbulb, ArrowRight } from 'lucide-react';
+import { SOLAR_CATEGORIES } from '@/data/solarProducts';
 
 const SOLAR_IMG = asset('/images/solar-section.webp');
+
+/* One icon per category slug; falls back to the sun for anything new. */
+const CATEGORY_ICONS: Record<string, typeof Sun> = {
+  'solar-modules': Sun,
+  inverters: Zap,
+  bess: BatteryCharging,
+  mounting: Home,
+  cables: Cable,
+  accessories: Lightbulb,
+};
 
 export default function SolarSection() {
   const { t } = useLanguage();
   const { ref, inView } = useInView({ threshold: 0.1 });
 
-  const products = [
-    { icon: Sun, title: t.solar_panels_title, desc: t.solar_panels_desc },
-    { icon: Zap, title: t.solar_inverters_title, desc: t.solar_inverters_desc },
-    { icon: BatteryCharging, title: t.solar_storage_title, desc: t.solar_storage_desc },
-    { icon: Home, title: t.solar_mounting_title, desc: t.solar_mounting_desc },
-    { icon: Cable, title: t.solar_cables_title, desc: t.solar_cables_desc },
-    { icon: Lightbulb, title: t.solar_accessories_title, desc: t.solar_accessories_desc },
-  ];
+  const key = t as unknown as Record<string, string>;
+  const products = SOLAR_CATEGORIES.map((c) => ({
+    slug: c.slug,
+    icon: CATEGORY_ICONS[c.slug] ?? Sun,
+    title: key[c.nameKey] ?? c.nameKey,
+    desc: key[c.descKey] ?? '',
+    populated: c.populated,
+  }));
 
   return (
     <section id="solar" className="py-20 lg:py-28 bg-sage/30" ref={ref}>
@@ -69,25 +85,33 @@ export default function SolarSection() {
           </div>
         </motion.div>
 
-        {/* Product cards grid */}
+        {/* Product cards grid — each card opens its category page */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product, i) => (
             <motion.div
-              key={i}
+              key={product.slug}
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.2 + i * 0.08 }}
-              className="group bg-white rounded-2xl p-6 lg:p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-transparent hover:border-gold/30"
             >
-              <div className="w-12 h-12 rounded-xl bg-gold/15 flex items-center justify-center mb-5 group-hover:bg-gold/25 transition-colors">
-                <product.icon className="w-6 h-6 text-forest" />
-              </div>
-              <h3 className="font-heading font-semibold text-lg text-foreground mb-3">
-                {product.title}
-              </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                {product.desc}
-              </p>
+              <Link
+                href={`/products/${product.slug}`}
+                className="group bg-white rounded-2xl p-6 lg:p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-transparent hover:border-gold/30 flex flex-col h-full cursor-pointer"
+              >
+                <div className="w-12 h-12 rounded-xl bg-gold/15 flex items-center justify-center mb-5 group-hover:bg-gold/25 transition-colors">
+                  <product.icon className="w-6 h-6 text-forest" />
+                </div>
+                <h3 className="font-heading font-semibold text-lg text-foreground mb-3">
+                  {product.title}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed flex-1">
+                  {product.desc}
+                </p>
+                <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-forest">
+                  {product.populated ? t.prod_view_models : t.prod_in_preparation}
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
             </motion.div>
           ))}
         </div>

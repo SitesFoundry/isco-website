@@ -61,6 +61,77 @@ export type TranslationKeys = {
   solar_accessories_desc: string;
   learn_more: string;
 
+  // ── Product pages ──────────────────────────────────────────────
+  // Written in English first. Other languages omit these keys and fall back
+  // to the English values automatically — see getTranslations().
+  prod_all_products: string;
+  prod_template_title: string;
+  prod_template_body: string;
+  prod_in_preparation: string;
+  prod_view_models: string;
+  prod_browse: string;
+  prod_other_models: string;
+  prod_back_to_category: string;
+
+  // Solar module detail page
+  sm_part_number: string;
+  sm_key_facts: string;
+  sm_power_range: string;
+  sm_efficiency: string;
+  sm_cell_type: string;
+  sm_cell_config: string;
+  sm_dimensions: string;
+  sm_weight: string;
+  sm_dimensions_weight: string;
+  sm_loading: string;
+  sm_per_pallet: string;
+  sm_features_title: string;
+  sm_specs_title: string;
+  sm_specs_subtitle: string;
+  sm_general: string;
+  sm_technology: string;
+  sm_front_glass: string;
+  sm_rear_glass: string;
+  sm_frame: string;
+  sm_junction_box: string;
+  sm_cable: string;
+  sm_operating_temp: string;
+  sm_max_system_voltage: string;
+  sm_nmot: string;
+  sm_temp_coefficients: string;
+  sm_tempco_pm: string;
+  sm_tempco_voc: string;
+  sm_tempco_isc: string;
+  sm_stc_title: string;
+  sm_pmax: string;
+  sm_voc: string;
+  sm_isc: string;
+  sm_vmp: string;
+  sm_imp: string;
+  sm_eff: string;
+  sm_stc_note: string;
+  sm_packaging_title: string;
+  sm_container: string;
+  sm_modules_per_pallet: string;
+  sm_loading_quantity: string;
+  sm_warranty_title: string;
+  sm_product_warranty: string;
+  sm_power_warranty: string;
+  sm_degradation: string;
+  sm_certifications: string;
+  sm_f_power_t: string;
+  sm_f_power_d: string;
+  sm_f_reliability_t: string;
+  sm_f_reliability_d: string;
+  sm_f_lowlight_t: string;
+  sm_f_lowlight_d: string;
+  sm_f_degradation_t: string;
+  sm_f_degradation_d: string;
+  sm_f_tempco_t: string;
+  sm_f_tempco_d: string;
+  sm_f_antilid_t: string;
+  sm_f_antilid_d: string;
+
   // HVAC Section
   hvac_title: string;
   hvac_subtitle: string;
@@ -213,7 +284,17 @@ export type TranslationKeys = {
   send_inquiry: string;
 };
 
-const translations: Record<Language, TranslationKeys> = {
+/*
+ * English is the source of truth.
+ *
+ * New copy is written in English first, so a language that has not been
+ * translated yet must fall back *per key* rather than per language. Typing this
+ * as Partial lets a language omit keys it has not reached, and
+ * getTranslations() fills the gaps from `en` instead of rendering `undefined`
+ * on the page. When a translation arrives, add the key to that language's block
+ * — nothing else changes.
+ */
+const translations: Record<Language, Partial<TranslationKeys>> = {
   de: {
     nav_home: 'Startseite',
     nav_about: 'Über uns',
@@ -246,7 +327,7 @@ const translations: Record<Language, TranslationKeys> = {
     solar_panels_desc: 'Hocheffiziente TopCon- & PERC-monokristalline Module in vier Varianten: Standard, Vollschwarz, flexibel und faltbar — von führenden Herstellern mit bis zu 25%+ Wirkungsgrad.',
     solar_inverters_title: 'Wechselrichter',
     solar_inverters_desc: 'Inselwechselrichter für netzunabhängige Systeme und Hybridwechselrichter für die Kombination von Solar-, Batterie- und Netzstrom.',
-    solar_storage_title: 'Energiespeichersysteme (ESS)',
+    solar_storage_title: 'BESS',
     solar_storage_desc: 'Tragbare Powerstationen, Heim-Energiespeicher und gewerbliche/industrielle Speicherlösungen für zuverlässige Stromversorgung und maximale Eigenverbrauchsoptimierung.',
     solar_mounting_title: 'PV-Montagesysteme',
     solar_mounting_desc: 'Metall- und FRP-Verbundwerkstoff-Montagesysteme. Die leichten, hochfesten Verbundhalterungen sind in verschiedenen Farben erhältlich und als Komplett-Set für 4 Module konzipiert — ideal für kleine Hausdächer und kombinierbar für größere Anlagen.',
@@ -423,11 +504,11 @@ const translations: Record<Language, TranslationKeys> = {
 
     solar_title: 'Solar Energy Solutions',
     solar_subtitle: 'Complete photovoltaic systems for residential and commercial applications',
-    solar_panels_title: 'Solar Panels',
+    solar_panels_title: 'Solar Modules',
     solar_panels_desc: 'High-efficiency TopCon & PERC monocrystalline modules available in four types: standard, all-black, flexible, and foldable — from leading manufacturers with up to 25%+ efficiency.',
     solar_inverters_title: 'Inverters',
     solar_inverters_desc: 'Off-grid inverters for standalone systems and hybrid inverters that seamlessly combine solar, battery, and grid power sources.',
-    solar_storage_title: 'Energy Storage Systems (ESS)',
+    solar_storage_title: 'BESS',
     solar_storage_desc: 'Portable power stations, residential home storage, and commercial & industrial (C&I) energy storage solutions for reliable power supply and maximum self-consumption optimization.',
     solar_mounting_title: 'PV Mounting Systems',
     solar_mounting_desc: 'Metal and FRP composite mounting systems. The lightweight, high-strength composite brackets come in multiple colors and are available as a complete 4-panel kit with all installation components — ideal for small residential rooftops and expandable for larger arrays.',
@@ -436,6 +517,85 @@ const translations: Record<Language, TranslationKeys> = {
     solar_accessories_title: 'Solar-Powered Products',
     solar_accessories_desc: 'DC-powered appliances (12V/24V/48V): air conditioners, truck air conditioners, freezers, refrigerators, water pumps, fans, and TVs. Solar energy is stored in batteries during daylight and used as the primary power source, with grid power as backup — perfect for off-grid locations and reducing electricity costs.',
     learn_more: 'Learn more',
+
+    /* ── Product pages ──
+     * English-first. De/Ru/Es/Fr/It fall back to these strings until a
+     * translation is added; nothing else needs to change when it is. */
+    prod_all_products: 'All products',
+    prod_template_title: 'Detailed information is being prepared',
+    prod_template_body:
+      'This product range is available from ISCO GmbH. The full technical documentation and product listing for this category are being prepared and will appear here shortly.',
+    prod_in_preparation: 'In preparation',
+    prod_view_models: 'View models',
+    prod_browse: 'Browse',
+    prod_other_models: 'Other models',
+    prod_back_to_category: 'Back to category',
+
+    sm_part_number: 'Part number',
+    sm_key_facts: 'Key facts',
+    sm_power_range: 'Power range',
+    sm_efficiency: 'Peak efficiency',
+    sm_cell_type: 'Cell type',
+    sm_cell_config: 'Cell configuration',
+    sm_dimensions: 'Dimensions',
+    sm_weight: 'Weight',
+    sm_dimensions_weight: 'Dimensions & weight',
+    sm_loading: '40HQ loading quantity',
+    sm_per_pallet: 'Modules per pallet',
+    sm_features_title: 'Key features',
+    sm_specs_title: 'Technical specifications',
+    sm_specs_subtitle: 'Values given under standard test conditions unless stated otherwise',
+    sm_general: 'Mechanical & general',
+    sm_technology: 'Technology',
+    sm_front_glass: 'Front glass',
+    sm_rear_glass: 'Rear glass',
+    sm_frame: 'Frame',
+    sm_junction_box: 'Junction box',
+    sm_cable: 'Cable',
+    sm_operating_temp: 'Operating temperature',
+    sm_max_system_voltage: 'Maximum system voltage',
+    sm_nmot: 'NMOT',
+    sm_temp_coefficients: 'Temperature coefficients',
+    sm_tempco_pm: 'Temperature coefficient (Pm)',
+    sm_tempco_voc: 'Temperature coefficient (Voc)',
+    sm_tempco_isc: 'Temperature coefficient (Isc)',
+    sm_stc_title: 'Electrical data (STC)',
+    sm_pmax: 'Maximum power Pmax (W)',
+    sm_voc: 'Open-circuit voltage Voc (V)',
+    sm_isc: 'Short-circuit current Isc (A)',
+    sm_vmp: 'Voltage at Pmax Vmp (V)',
+    sm_imp: 'Current at Pmax Imp (A)',
+    sm_eff: 'Module efficiency (%)',
+    sm_stc_note:
+      'STC: irradiance 1000 W/m², cell temperature 25 °C, AM 1.5. Bifacial modules can gain up to 25% additional power from the rear side depending on installation.',
+    sm_packaging_title: 'Packaging & loading',
+    sm_container: 'Container',
+    sm_modules_per_pallet: 'Modules per pallet',
+    sm_loading_quantity: 'Total loading quantity',
+    sm_warranty_title: 'Warranty & certification',
+    sm_product_warranty: 'Product warranty',
+    sm_power_warranty: 'Linear power warranty',
+    sm_degradation: 'Power degradation',
+    sm_certifications: 'Certifications',
+    sm_f_power_t: 'High power output',
+    sm_f_power_d:
+      'N-type multi-busbar (MBB) half-cell technology improves energy density and delivers higher output power. With high bifaciality, up to 25% additional power gain is achievable from the rear side.',
+    sm_f_reliability_t: 'High reliability',
+    sm_f_reliability_d:
+      'Passed TÜV-certified salt mist and ammonia corrosion tests, as well as 2400 Pa wind load and 5400 Pa snow load tests.',
+    sm_f_lowlight_t: 'Better low-light performance',
+    sm_f_lowlight_d:
+      'Outperforms conventional modules under low irradiance conditions such as cloudy, hazy, or overcast weather.',
+    sm_f_degradation_t: 'Low power degradation',
+    sm_f_degradation_d:
+      'First-year degradation below 1.0%, then a linear 0.40% per year over 30 years (years 2–30).',
+    sm_f_tempco_t: 'Low temperature coefficient',
+    sm_f_tempco_d:
+      'Passivated contact cell technology enables higher power generation under real operating conditions.',
+    sm_f_antilid_t: 'Better anti-LID',
+    sm_f_antilid_d:
+      'N-type cells are free from boron-oxygen (B-O) complex-induced LID, further enhancing long-term energy yield.',
+
 
     hvac_title: 'HVAC Solutions',
     hvac_subtitle: 'Modern heating, ventilation and air conditioning for every need',
@@ -604,11 +764,11 @@ const translations: Record<Language, TranslationKeys> = {
 
     solar_title: 'Солнечные энергетические решения',
     solar_subtitle: 'Комплексные фотоэлектрические системы для жилых и коммерческих объектов',
-    solar_panels_title: 'Солнечные панели',
+    solar_panels_title: 'Солнечные модули',
     solar_panels_desc: 'Высокоэффективные монокристаллические модули TopCon и PERC четырёх типов: стандартные, полностью чёрные, гибкие и складные — от ведущих производителей с КПД до 25%+.',
     solar_inverters_title: 'Инверторы',
     solar_inverters_desc: 'Автономные инверторы для изолированных систем и гибридные инверторы для комбинирования солнечной, аккумуляторной и сетевой энергии.',
-    solar_storage_title: 'Системы накопления энергии (ESS)',
+    solar_storage_title: 'BESS',
     solar_storage_desc: 'Портативные электростанции, домашние системы хранения и коммерческие/промышленные накопители энергии для надёжного электроснабжения и максимальной оптимизации собственного потребления.',
     solar_mounting_title: 'Системы крепления ФЭМ',
     solar_mounting_desc: 'Металлические и композитные (FRP) системы крепления. Лёгкие и прочные композитные кронштейны доступны в различных цветах и поставляются в комплекте на 4 панели со всеми монтажными элементами — идеально для небольших крыш и расширяемы для крупных массивов.',
@@ -785,11 +945,11 @@ const translations: Record<Language, TranslationKeys> = {
 
     solar_title: 'Soluciones de energía solar',
     solar_subtitle: 'Sistemas fotovoltaicos completos para aplicaciones residenciales y comerciales',
-       solar_panels_title: 'Paneles solares',
+       solar_panels_title: 'Módulos solares',
     solar_panels_desc: 'Módulos monocristalinos TopCon y PERC de alta eficiencia en cuatro tipos: estándar, totalmente negro, flexible y plegable — de fabricantes líderes con hasta 25%+ de eficiencia.',
     solar_inverters_title: 'Inversores',
     solar_inverters_desc: 'Inversores aislados para sistemas autónomos e inversores híbridos que combinan energía solar, batería y red eléctrica.',
-    solar_storage_title: 'Sistemas de almacenamiento de energía (ESS)',
+    solar_storage_title: 'BESS',
     solar_storage_desc: 'Estaciones de energía portátiles, almacenamiento residencial y soluciones de almacenamiento comercial e industrial (C&I) para suministro fiable y máxima optimización del autoconsumo.',
     solar_mounting_title: 'Sistemas de montaje FV',
     solar_mounting_desc: 'Sistemas de montaje metálicos y de material compuesto FRP. Los soportes compuestos, ligeros y de alta resistencia, están disponibles en varios colores y como kit completo para 4 paneles con todos los componentes de instalación — ideales para tejados residenciales pequeños y ampliables para instalaciones mayores.',
@@ -966,11 +1126,11 @@ const translations: Record<Language, TranslationKeys> = {
 
     solar_title: 'Solutions d\'énergie solaire',
     solar_subtitle: 'Systèmes photovoltaïques complets pour applications résidentielles et commerciales',
-    solar_panels_title: 'Panneaux solaires',
+    solar_panels_title: 'Modules solaires',
     solar_panels_desc: 'Modules monocristallins TopCon et PERC haute efficacité en quatre types : standard, tout noir, flexible et pliable — de fabricants leaders avec jusqu\'\u00e0 25%+ de rendement.',
     solar_inverters_title: 'Onduleurs',
     solar_inverters_desc: 'Onduleurs autonomes pour systèmes isolés et onduleurs hybrides combinant énergie solaire, batterie et réseau électrique.',
-    solar_storage_title: 'Systèmes de stockage d\'\u00e9nergie (ESS)',
+    solar_storage_title: 'BESS',
     solar_storage_desc: 'Stations d\'\u00e9nergie portables, stockage résidentiel et solutions de stockage commercial et industriel (C&I) pour une alimentation fiable et une optimisation maximale de l\'autoconsommation.',
     solar_mounting_title: 'Systèmes de montage PV',
     solar_mounting_desc: 'Systèmes de montage métalliques et en matériau composite FRP. Les supports composites légers et haute résistance sont disponibles en plusieurs couleurs et en kit complet pour 4 panneaux avec tous les composants d\'installation — idéaux pour les petites toitures résidentielles et extensibles pour les installations plus grandes.',
@@ -1147,11 +1307,11 @@ const translations: Record<Language, TranslationKeys> = {
 
     solar_title: 'Soluzioni di energia solare',
     solar_subtitle: 'Sistemi fotovoltaici completi per applicazioni residenziali e commerciali',
-    solar_panels_title: 'Pannelli solari',
+    solar_panels_title: 'Moduli fotovoltaici',
     solar_panels_desc: 'Moduli monocristallini TopCon e PERC ad alta efficienza in quattro tipi: standard, tutto nero, flessibile e pieghevole — dai principali produttori con efficienza fino al 25%+.',
     solar_inverters_title: 'Inverter',
     solar_inverters_desc: 'Inverter off-grid per sistemi autonomi e inverter ibridi che combinano energia solare, batteria e rete elettrica.',
-    solar_storage_title: 'Sistemi di accumulo energetico (ESS)',
+    solar_storage_title: 'BESS',
     solar_storage_desc: 'Stazioni di energia portatili, accumulo residenziale e soluzioni di accumulo commerciale e industriale (C&I) per un\'alimentazione affidabile e la massima ottimizzazione dell\'autoconsumo.',
     solar_mounting_title: 'Sistemi di montaggio FV',
     solar_mounting_desc: 'Sistemi di montaggio metallici e in materiale composito FRP. I supporti compositi leggeri e ad alta resistenza sono disponibili in più colori e come kit completo per 4 pannelli con tutti i componenti di installazione — ideali per piccoli tetti residenziali ed espandibili per impianti più grandi.',
@@ -1302,7 +1462,9 @@ const translations: Record<Language, TranslationKeys> = {
 };
 
 export function getTranslations(lang: Language): TranslationKeys {
-  return translations[lang] || translations.en;
+  // Per-key fallback so untranslated strings show their English source rather
+  // than an empty gap. English itself passes through unchanged.
+  return { ...translations.en, ...translations[lang] } as TranslationKeys;
 }
 
 export function detectBrowserLanguage(): Language {

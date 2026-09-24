@@ -3,18 +3,39 @@ import { asset } from "@/lib/asset";
  * Design: Nordic Clean Energy — Scandinavian Functionalism
  * Navbar: Clean, transparent-to-solid on scroll, with language selector at top
  * Colors: Forest green primary, warm cream background
+ *
+ * The Solar and HVAC entries are dropdowns. Solar's children link to real
+ * category pages; HVAC's children scroll to the section that describes each
+ * product line until those pages exist. Both parents still scroll to their
+ * section when clicked, so the dropdown reveals a taxonomy without taking the
+ * short path away.
  */
 import { useState, useEffect } from 'react';
+import { Link } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LANGUAGES, type Language } from '@/lib/i18n';
+import { SOLAR_CATEGORIES } from '@/data/solarProducts';
 import { Menu, X, ChevronDown, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+type NavChild = {
+  label: string;
+  /** "#section" scrolls in-page; anything else is a route. */
+  href: string;
+  /** Rendered as a small trailing tag, e.g. "In preparation". */
+  note?: string;
+};
+
+type NavItem =
+  | { kind: 'link'; label: string; href: string }
+  | { kind: 'group'; label: string; href: string; children: NavChild[] };
 
 export default function Navbar() {
   const { language, setLanguage, t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -31,16 +52,40 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
-  const navLinks = [
-    { label: t.nav_home, href: '#home' },
-    { label: t.nav_about, href: '#about' },
-    { label: t.nav_solar, href: '#solar' },
-    { label: t.nav_hvac, href: '#hvac' },
-    { label: t.nav_contact, href: '#contact' },
+  /* Translation keys are looked up by name for the category entries, which live
+   * in the catalogue data as key strings rather than as literal copy. */
+  const key = t as unknown as Record<string, string>;
+
+  const navItems: NavItem[] = [
+    { kind: 'link', label: t.nav_home, href: '#home' },
+    { kind: 'link', label: t.nav_about, href: '#about' },
+    {
+      kind: 'group',
+      label: t.nav_solar,
+      href: '#solar',
+      children: SOLAR_CATEGORIES.map((c) => ({
+        label: key[c.nameKey] ?? c.nameKey,
+        href: `/products/${c.slug}`,
+        note: c.populated ? undefined : t.prod_in_preparation,
+      })),
+    },
+    {
+      kind: 'group',
+      label: t.nav_hvac,
+      href: '#hvac',
+      children: [
+        { label: t.hvac_boiler_title, href: '#hvac' },
+        { label: t.hvac_heatpump_title, href: '#hvac' },
+        { label: t.hvac_ventilation_title, href: '#hvac' },
+        { label: t.hvac_ac_title, href: '#hvac' },
+      ],
+    },
+    { kind: 'link', label: t.nav_contact, href: '#contact' },
   ];
 
   const handleNavClick = (href: string) => {
     setMobileOpen(false);
+    setOpenMenu(null);
     const el = document.querySelector(href);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
@@ -48,6 +93,26 @@ export default function Navbar() {
   };
 
   const currentLang = LANGUAGES.find(l => l.code === language);
+
+  /** A dropdown child: in-page anchors scroll, routes navigate. */
+  const renderChild = (child: NavChild, className: string) =>
+    child.href.startsWith('#') ? (
+      <a
+        href={child.href}
+        onClick={(e) => { e.preventDefault(); handleNavClick(child.href); }}
+        className={className}
+      >
+        {child.label}
+      </a>
+    ) : (
+      <Link href={child.href} className={className} onClick={() => setMobileOpen(false)}>
+        {child.label}
+      </Link>
+    );
+
+  const linkClass = scrolled
+    ? 'text-gray-700 hover:text-forest hover:bg-sage'
+    : 'text-white/90 hover:text-white hover:bg-white/10';
 
   return (
     <header
@@ -120,22 +185,89 @@ export default function Navbar() {
           />
         </a>
 
-        {/* Desktop nav links */}
+        {/* Desktop nav */}
         <div className="hidden lg:flex items-center gap-1">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-              className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ${
-                scrolled
-                  ? 'text-gray-700 hover:text-forest hover:bg-sage'
-                  : 'text-white/90 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              {link.label}
-            </a>
-          ))}
+          {navItems.map((item) =>
+            item.kind === 'link' ? (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={(e) => { e.preventDefault(); handleNavClick(item.href); }}
+                className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ${linkClass}`}
+              >
+                {item.label}
+              </a>
+            ) : (
+              <div
+                key={item.href}
+                className="relative"
+                onMouseEnter={() => setOpenMenu(item.label)}
+                onMouseLeave={() => setOpenMenu(null)}
+              >
+                <button
+                  type="button"
+                  onClick={() => handleNavClick(item.href)}
+                  aria-expanded={openMenu === item.label}
+                  aria-haspopup="true"
+                  className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 inline-flex items-center gap-1.5 ${linkClass}`}
+                >
+                  {item.label}
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-300 ${
+                      openMenu === item.label ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {openMenu === item.label && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      transition={{ duration: 0.18 }}
+                      className="absolute left-1/2 -translate-x-1/2 top-full pt-2 min-w-[280px]"
+                    >
+                      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2">
+                        {item.children.map((child) => (
+                          <div key={`${child.href}-${child.label}`}>
+                            {child.href.startsWith('#') ? (
+                              <a
+                                href={child.href}
+                                onClick={(e) => { e.preventDefault(); handleNavClick(child.href); }}
+                                className="flex items-center justify-between gap-4 px-5 py-2.5 text-sm text-gray-700 hover:bg-sage hover:text-forest transition-colors"
+                              >
+                                <span>{child.label}</span>
+                                {child.note && (
+                                  <span className="text-xs text-muted-foreground shrink-0">
+                                    {child.note}
+                                  </span>
+                                )}
+                              </a>
+                            ) : (
+                              <Link
+                                href={child.href}
+                                onClick={() => setOpenMenu(null)}
+                                className="flex items-center justify-between gap-4 px-5 py-2.5 text-sm text-gray-700 hover:bg-sage hover:text-forest transition-colors cursor-pointer"
+                              >
+                                <span>{child.label}</span>
+                                {child.note && (
+                                  <span className="text-xs text-muted-foreground shrink-0">
+                                    {child.note}
+                                  </span>
+                                )}
+                              </Link>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ),
+          )}
+
           <a
             href="#contact"
             onClick={(e) => { e.preventDefault(); handleNavClick('#contact'); }}
@@ -207,27 +339,51 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-white z-40 lg:hidden"
+              className="fixed inset-0 bg-white z-40 lg:hidden overflow-y-auto"
             >
-              <div className="flex flex-col items-center justify-center h-full gap-6 pt-20">
-                {navLinks.map((link, i) => (
-                  <motion.a
-                    key={link.href}
-                    href={link.href}
+              <div className="flex flex-col items-center gap-5 pt-24 pb-16 px-8">
+                {navItems.map((item, i) => (
+                  <motion.div
+                    key={item.label}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.08 }}
-                    onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                    className="text-2xl font-heading font-semibold text-forest hover:text-forest-light transition-colors"
+                    transition={{ delay: i * 0.06 }}
+                    className="w-full max-w-sm text-center"
                   >
-                    {link.label}
-                  </motion.a>
+                    <a
+                      href={item.href}
+                      onClick={(e) => { e.preventDefault(); handleNavClick(item.href); }}
+                      className="text-2xl font-heading font-semibold text-forest hover:text-forest-light transition-colors"
+                    >
+                      {item.label}
+                    </a>
+
+                    {/* Children, indented under their parent */}
+                    {item.kind === 'group' && (
+                      <div className="mt-3 flex flex-col gap-2 border-l-2 border-sage pl-4 text-left">
+                        {item.children.map((child) => (
+                          <div key={`${child.href}-${child.label}`}>
+                            {renderChild(
+                              child,
+                              'text-sm text-gray-700 hover:text-forest transition-colors',
+                            )}
+                            {child.note && (
+                              <span className="ml-2 text-xs text-muted-foreground">
+                                {child.note}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
                 ))}
+
                 <motion.a
                   href="#contact"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ delay: 0.45 }}
                   onClick={(e) => { e.preventDefault(); handleNavClick('#contact'); }}
                   className="mt-4 px-8 py-3 text-lg font-semibold rounded-full bg-forest text-white"
                 >
@@ -239,7 +395,7 @@ export default function Navbar() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  className="flex flex-wrap justify-center gap-2 mt-4 px-8"
+                  className="flex flex-wrap justify-center gap-2 mt-4"
                 >
                   {LANGUAGES.map((lang) => (
                     <button

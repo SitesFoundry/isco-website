@@ -23,20 +23,40 @@ const index = join(dist, "index.html");
 const notFound = join(dist, "404.html");
 const sitemap = join(dist, "sitemap.xml");
 
-/** Read the boiler slugs straight from the product data so the sitemap cannot
- *  drift away from the pages the app can actually render. */
-async function boilerSlugs() {
+/**
+ * Slugs declared inside one array of a data module.
+ *
+ * The slice is bounded by markers in the source rather than matched across the
+ * whole file. solarProducts.ts declares both category slugs (`solar-modules`)
+ * and module slugs (`450w`) with the same `slug:` key, and a whole-file regex
+ * would emit /products/450w for a page that actually lives at
+ * /products/solar-modules/450w — a sitemap advertising URLs that 404.
+ *
+ * Every step fails loudly on an empty result: a sitemap that silently omits
+ * every product page is worse than a failed build.
+ */
+async function slugsIn(relPath, startMarker, endMarker) {
   const source = await readFile(
-    join(import.meta.dirname, "..", "src", "data", "boilerProducts.ts"),
+    join(import.meta.dirname, "..", relPath),
     "utf8",
   );
-  const slugs = [...source.matchAll(/slug:\s*["']([^"']+)["']/g)].map(
-    (m) => m[1],
-  );
+  const from = source.indexOf(startMarker);
+  const to = endMarker ? source.indexOf(endMarker, from + 1) : source.length;
+  if (from === -1 || to === -1) {
+    throw new Error(
+      `postbuild: sitemap markers not found in ${relPath} — looked for ` +
+        `"${startMarker}"${endMarker ? ` … "${endMarker}"` : ""}`,
+    );
+  }
+
+  const slugs = [
+    ...source.slice(from, to).matchAll(/slug:\s*["']([^"']+)["']/g),
+  ].map((m) => m[1]);
+
   if (slugs.length === 0) {
     throw new Error(
-      "postbuild: found no `slug:` entries in src/data/boilerProducts.ts — " +
-        "the sitemap would be published without any product pages",
+      `postbuild: no \`slug:\` entries between the markers in ${relPath} — ` +
+        "the sitemap would omit those pages",
     );
   }
   return [...new Set(slugs)].sort();
@@ -58,8 +78,31 @@ if (copied.size !== built.size) {
 
 // --- sitemap.xml -----------------------------------------------------------
 const origin = "https://www.iscogmbh.com";
-const slugs = await boilerSlugs();
-const urls = ["/", ...slugs.map((s) => `/products/boiler/${s}`)];
+
+// Every route the app can actually render, derived from the same data the
+// pages read — so the sitemap cannot drift away from the catalogue.
+const boilerSlugs = await slugsIn(
+  "src/data/boilerProducts.ts",
+  "export const BOILER_PRODUCTS",
+  "export function getBoilerBySlug",
+);
+const categorySlugs = await slugsIn(
+  "src/data/solarProducts.ts",
+  "sitemap:categories",
+  "sitemap:modules",
+);
+const moduleSlugs = await slugsIn(
+  "src/data/solarProducts.ts",
+  "sitemap:modules",
+  null,
+);
+
+const urls = [
+  "/",
+  ...boilerSlugs.map((s) => `/products/boiler/${s}`),
+  ...categorySlugs.map((s) => `/products/${s}`),
+  ...moduleSlugs.map((s) => `/products/solar-modules/${s}`),
+];
 
 const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

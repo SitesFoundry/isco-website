@@ -5,6 +5,8 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import Home from "./pages/Home";
 import BoilerDetail from "./pages/BoilerDetail";
+import ProductCategory from "./pages/ProductCategory";
+import SolarModuleDetail from "./pages/SolarModuleDetail";
 
 /*
  * Vite's BASE_URL is "/" when the site is served from the root of a domain
@@ -19,7 +21,11 @@ function Routes() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      {/* More specific paths first; the category route matches a single
+          segment so the two-segment product routes never reach it. */}
+      <Route path="/products/solar-modules/:slug" component={SolarModuleDetail} />
       <Route path="/products/boiler/:slug" component={BoilerDetail} />
+      <Route path="/products/:category" component={ProductCategory} />
       <Route component={NotFound} />
     </Switch>
   );
