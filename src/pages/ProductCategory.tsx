@@ -182,11 +182,33 @@ function cardsFor(
 
 /* ── Category with a catalogue ─────────────────────────────────── */
 
+/*
+ * Pick the column count so the last row is never a single card.
+ *
+ * Four across is the default. Five products would put one card alone on the
+ * second row (4+1), which reads as a mistake rather than a layout, so five
+ * drops to three and forms 3+2. Counts that already fill their rows stay at
+ * four — switching those to three would only move the orphan, turning a clean
+ * 4 into 3+1.
+ */
+function columnsFor(count: number): 3 | 4 {
+  if (count % 4 !== 1) return 4;
+  if (count % 3 !== 1) return 3;
+  return 4;
+}
+
 function ProductGrid({ cards }: { cards: Card[] }) {
+  // Tailwind only keeps class names it can see as literals, so the two options
+  // are written out rather than composed from the number.
+  const gridClass =
+    columnsFor(cards.length) === 3
+      ? 'grid sm:grid-cols-2 lg:grid-cols-3 gap-6'
+      : 'grid sm:grid-cols-2 lg:grid-cols-4 gap-6';
+
   return (
     <section className="pb-8">
       <div className="container">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className={gridClass}>
           {cards.map((c, i) => (
             <motion.div
               key={c.key}
