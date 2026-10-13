@@ -1,4 +1,4 @@
-import { asset } from "@/lib/asset";
+import { absoluteUrl, SITE_ORIGIN } from "@/lib/asset";
 /*
  * SEO: Structured data (JSON-LD), Open Graph meta tags
  * Injected via useEffect to dynamically update head
@@ -18,12 +18,9 @@ export default function SEOHead() {
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: 'ISCO GmbH',
-      url: 'https://www.iscogmbh.com',
-      // Google requires a structured-data logo of at least 112x112. The nav
-      // mark is 143x96 and fails on height; the footer mark is 190x128.
-      // The path must be absolute here — a relative one is not resolvable to
-      // an image by the crawler reading the JSON-LD.
-      logo: 'https://www.iscogmbh.com/images/isco-logo-footer.png',
+      url: SITE_ORIGIN,
+      // Absolute, and a mark that clears Google's 112x112 floor for this field.
+      logo: absoluteUrl('/images/isco-logo-footer.png'),
       description: 'Leading provider of Solar and HVAC solutions in Europe. Solar modules, inverters, heat pumps, gas boilers and more.',
       address: {
         '@type': 'PostalAddress',
@@ -46,8 +43,8 @@ export default function SEOHead() {
       '@context': 'https://schema.org',
       '@type': 'LocalBusiness',
       name: 'ISCO GmbH',
-      image: asset('/images/about-company.webp'),
-      url: 'https://www.iscogmbh.com',
+      image: absoluteUrl('/images/about-company.webp'),
+      url: SITE_ORIGIN,
       email: 'sales@iscogmbh.com',
       address: {
         '@type': 'PostalAddress',
@@ -70,7 +67,7 @@ export default function SEOHead() {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: 'ISCO GmbH',
-      url: 'https://www.iscogmbh.com',
+      url: SITE_ORIGIN,
       inLanguage: ['de', 'en', 'ru', 'es', 'fr', 'it'],
       description: 'ISCO GmbH - Solar & HVAC Solutions Provider in Europe',
     };
@@ -102,9 +99,11 @@ export default function SEOHead() {
     // Open Graph
     updateMeta('og:title', 'ISCO GmbH - Solar & HVAC Solutions', true);
     updateMeta('og:description', 'Leading provider of Solar and HVAC solutions in Europe. Solar modules, inverters, heat pumps, gas boilers and more.', true);
-    updateMeta('og:url', 'https://www.iscogmbh.com', true);
+    updateMeta('og:url', SITE_ORIGIN, true);
     updateMeta('og:type', 'website', true);
-    updateMeta('og:image', asset('/images/hero-banner.webp'), true);
+    // A social crawler fetches this without a page to resolve against, so a
+    // root-relative path yields no preview image at all.
+    updateMeta('og:image', absoluteUrl('/images/hero-banner.webp'), true);
     updateMeta('og:locale', language === 'de' ? 'de_DE' : language === 'en' ? 'en_US' : language, true);
     updateMeta('og:site_name', 'ISCO GmbH', true);
 
@@ -112,7 +111,7 @@ export default function SEOHead() {
     updateMeta('twitter:card', 'summary_large_image');
     updateMeta('twitter:title', 'ISCO GmbH - Solar & HVAC Solutions');
     updateMeta('twitter:description', 'Leading provider of Solar and HVAC solutions in Europe.');
-    updateMeta('twitter:image', asset('/images/hero-banner.webp'));
+    updateMeta('twitter:image', absoluteUrl('/images/hero-banner.webp'));
 
     // Additional SEO meta
     updateMeta('robots', 'index, follow');
