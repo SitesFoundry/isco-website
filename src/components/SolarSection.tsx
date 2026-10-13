@@ -70,7 +70,7 @@ export default function SolarSection() {
         >
           <img
             src={SOLAR_IMG}
-            alt="Premium solar panels"
+            alt="Premium solar modules"
             className="w-full h-[280px] sm:h-[360px] lg:h-[420px] object-cover"
             loading="lazy"
           />

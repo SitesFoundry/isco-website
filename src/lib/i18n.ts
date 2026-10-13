@@ -492,7 +492,7 @@ const translations: Record<Language, Partial<TranslationKeys>> = {
     about_title: 'About ISCO GmbH',
     about_subtitle: 'Your trusted partner for sustainable energy solutions',
     about_text_1: 'Based in Frankfurt am Main, ISCO GmbH is a leading provider of Solar and HVAC solutions across Europe. We combine German engineering excellence with global reach to deliver premium products and services to our clients.',
-    about_text_2: 'Our comprehensive product portfolio covers the entire value chain of renewable energy and building technology — from solar panels and inverters to heat pumps and ventilation systems.',
+    about_text_2: 'Our comprehensive product portfolio covers the entire value chain of renewable energy and building technology — from solar modules and inverters to heat pumps and ventilation systems.',
     about_stat_years: '10+',
     about_stat_years_label: 'Years Experience',
     about_stat_countries: '30+',

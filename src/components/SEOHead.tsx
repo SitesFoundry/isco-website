@@ -19,8 +19,12 @@ export default function SEOHead() {
       '@type': 'Organization',
       name: 'ISCO GmbH',
       url: 'https://www.iscogmbh.com',
-      logo: 'https://www.iscogmbh.com/logo.png',
-      description: 'Leading provider of Solar and HVAC solutions in Europe. Solar panels, inverters, heat pumps, gas boilers and more.',
+      // Google requires a structured-data logo of at least 112x112. The nav
+      // mark is 143x96 and fails on height; the footer mark is 190x128.
+      // The path must be absolute here — a relative one is not resolvable to
+      // an image by the crawler reading the JSON-LD.
+      logo: 'https://www.iscogmbh.com/images/isco-logo-footer.png',
+      description: 'Leading provider of Solar and HVAC solutions in Europe. Solar modules, inverters, heat pumps, gas boilers and more.',
       address: {
         '@type': 'PostalAddress',
         streetAddress: 'Kennedyallee 93',
@@ -97,7 +101,7 @@ export default function SEOHead() {
 
     // Open Graph
     updateMeta('og:title', 'ISCO GmbH - Solar & HVAC Solutions', true);
-    updateMeta('og:description', 'Leading provider of Solar and HVAC solutions in Europe. Solar panels, inverters, heat pumps, gas boilers and more.', true);
+    updateMeta('og:description', 'Leading provider of Solar and HVAC solutions in Europe. Solar modules, inverters, heat pumps, gas boilers and more.', true);
     updateMeta('og:url', 'https://www.iscogmbh.com', true);
     updateMeta('og:type', 'website', true);
     updateMeta('og:image', asset('/images/hero-banner.webp'), true);
