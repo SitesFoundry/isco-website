@@ -65,13 +65,14 @@ export type TranslationKeys = {
   // Written in English first. Other languages omit these keys and fall back
   // to the English values automatically — see getTranslations().
   prod_all_products: string;
-  prod_template_title: string;
-  prod_template_body: string;
-  prod_in_preparation: string;
+  prod_range_title: string;
+  prod_range_body: string;
   prod_view_models: string;
-  prod_browse: string;
+  prod_view_range: string;
   prod_other_models: string;
   prod_back_to_category: string;
+  prod_cta_title: string;
+  prod_cta_body: string;
 
   // Solar module detail page
   sm_part_number: string;
@@ -522,14 +523,23 @@ const translations: Record<Language, Partial<TranslationKeys>> = {
      * English-first. De/Ru/Es/Fr/It fall back to these strings until a
      * translation is added; nothing else needs to change when it is. */
     prod_all_products: 'All products',
-    prod_template_title: 'Detailed information is being prepared',
-    prod_template_body:
-      'This product range is available from ISCO GmbH. The full technical documentation and product listing for this category are being prepared and will appear here shortly.',
-    prod_in_preparation: 'In preparation',
+    /*
+     * Replaces the earlier "information is being prepared" notice. That message
+     * was shown to customers, and telling a visitor the site is unfinished
+     * serves neither them nor ISCO. These are real product ranges; what is
+     * unpublished is detail, so the page states the range and offers the route a
+     * buyer would actually take.
+     */
+    prod_range_title: 'Available across our full range',
+    prod_range_body:
+      'ISCO GmbH supplies this product range with full technical support and project-specific configuration. Tell us the application and we will come back with models, datasheets and pricing.',
     prod_view_models: 'View models',
-    prod_browse: 'Browse',
+    prod_view_range: 'View range',
     prod_other_models: 'Other models',
     prod_back_to_category: 'Back to category',
+    prod_cta_title: 'Need help choosing?',
+    prod_cta_body:
+      'Send us the project details and we will recommend the right model, with datasheets and a quotation.',
 
     sm_part_number: 'Part number',
     sm_key_facts: 'Key facts',
@@ -966,7 +976,7 @@ const translations: Record<Language, Partial<TranslationKeys>> = {
     hvac_heatpump_title: 'Bombas de calor aerotérmicas',
     hvac_heatpump_desc: 'Bombas de calor aire-agua de alta eficiencia que extraen calor del aire ambiente y ofrecen un ahorro energético significativo frente a la calefacción eléctrica. La tecnología EVI garantiza un rendimiento fiable hasta −25°C.',
     hvac_ventilation_title: 'Ventilación con recuperación de calor (HRV)',
-    hvac_ventilation_desc: 'Sistemas de ventilación que recuperan la energía térmica del aire de extracción durante el intercambio de aire fresco — recuperando energía de calefacción y refrigeración para una calidad de aire óptima con mínima pérdida energética en verano e invierno.',
+    hvac_ventilation_desc: 'Sistemas de ventilación que recuperan la energía térmica del aire de extracción durante el intercambio de aire fresco ��� recuperando energía de calefacción y refrigeración para una calidad de aire óptima con mínima pérdida energética en verano e invierno.',
     hvac_ac_title: 'Aire acondicionado',
     hvac_ac_desc: 'Sistemas con tecnología Inverter, VRV y VFV, adaptados a las necesidades reales. Soluciones ODM disponibles para proyectos personalizados.',
     hvac_boiler_combi: 'Caldera combinada',
@@ -1460,6 +1470,150 @@ const translations: Record<Language, Partial<TranslationKeys>> = {
     sp_smart_3: 'Oltre 10 design di pannello frontale disponibili',
   },
 };
+
+/*
+ * Labels for the product spec tables, kept apart from TranslationKeys.
+ *
+ * TranslationKeys is a flat interface where every member must be declared in the
+ * type — the right shape for a fixed set of UI strings. A spec sheet is open
+ * ended: every new product family brings new row labels, so putting them there
+ * would mean editing a type definition each time a datasheet arrives. Here a
+ * label is a map entry, and it resolves through the same per-key English
+ * fallback as the rest of the file: translating one is one line in one language.
+ *
+ * A missing key returns the key itself rather than an empty cell, so an
+ * unlabelled row is visible in review instead of silently blank.
+ */
+export const SPEC_LABELS: Record<string, string> = {
+  /* Shared */
+  common_batteryType: 'Battery Type',
+  common_cooling: 'Cooling Method',
+  common_display: 'Display',
+  common_operatingTemp: 'Operating Temperature',
+  common_outputFrequency: 'Rated Output Frequency',
+  common_outputVoltage: 'Rated Output Voltage',
+  common_outputWaveform: 'Output Waveform',
+  common_thdi: 'THDi',
+  common_thdu: 'THDu',
+  common_weight: 'Weight',
+
+  /* Inverters */
+  inv_acFrequency: 'Rated Grid Frequency',
+  inv_acVoltage: 'Rated Grid Voltage',
+  inv_afci: 'AFCI',
+  inv_altitude: 'Altitude',
+  inv_basicProtection: 'Basic Protection',
+  inv_batteryRated: 'Rated Voltage',
+  inv_batteryType: 'Battery Type',
+  inv_batteryVoltage: 'Voltage Range',
+  inv_chargeCurrent: 'Max. Charging and Discharging Current',
+  inv_chargingRule: 'Charging Rule',
+  inv_commBms: 'Communication with BMS',
+  inv_commMeter: 'Communication with Meter',
+  inv_commPortal: 'Communication with Portal',
+  inv_cooling: 'Cooling Method',
+  inv_dcSwitch: 'DC Switch',
+  inv_dimensions: 'Dimensions (L × W × H)',
+  inv_euroEfficiency: 'European Efficiency',
+  inv_humidity: 'Relative Humidity',
+  inv_ip: 'Ingress Protection',
+  inv_maxApparent: 'Max. Output Apparent Power',
+  inv_maxDischargeEfficiency: 'Max. Discharging Efficiency',
+  inv_maxEfficiency: 'Max. Efficiency',
+  inv_maxGridInput: 'Max. Input Power From Grid',
+  inv_maxGridInputCurrent: 'Max. Input Current From Grid',
+  inv_maxOutputCurrent: 'Max. Output Current',
+  inv_mounting: 'Mounting Method',
+  inv_mpptCount: 'Number of MPPTs',
+  inv_noise: 'Noise Emission',
+  inv_operatingTemp: 'Operating Temperature',
+  inv_overload: 'Overload Power, Time',
+  inv_powerFactor: 'Power Factor',
+  inv_pvCurrentPerMppt: 'Max. Input Current per MPPT',
+  inv_pvMaxInput: 'Max. Input Power',
+  inv_pvMaxVoltage: 'Max. Input Voltage',
+  inv_pvMpptRange: 'MPPT Voltage Range',
+  inv_pvRated: 'Rated Input Voltage',
+  inv_pvShortCircuit: 'Max. Short Circuit Current per MPPT',
+  inv_pvStartup: 'Start-up Voltage',
+  inv_rapidShutdown: 'Rapid Shutdown (RSD)',
+  inv_ratedOutput: 'Rated Output Power',
+  inv_surgeProtection: 'SPD',
+  inv_switchTime: 'Switch Time',
+  inv_topology: 'Topology',
+  inv_warranty: 'Warranty',
+  inv_weight: 'Weight',
+
+  /* Batteries */
+  bess_acInputRange: 'AC Input Voltage Range',
+  bess_acOutputRange: 'AC Output Voltage Range',
+  bess_altitude: 'Max. Operating Altitude',
+  bess_antiCorrosion: 'Anti-Corrosion Level',
+  bess_cRate: 'C-Rate',
+  bess_cellCapacity: 'Cell Capacity',
+  bess_cellType: 'Cell Type',
+  bess_certifications: 'Certifications',
+  bess_chargeCurrentMax: 'Max. Continuous Charge/Discharge Current',
+  bess_chargeCurrentRecommended: 'Recommended Charge/Discharge Current',
+  bess_chargeDischargePower: 'Rated Charge/Discharge Power',
+  bess_chargeTemp: 'Charging Temperature',
+  bess_communication: 'Communication Ports',
+  bess_configuration: 'Configuration',
+  bess_connectionMode: 'Connection Mode',
+  bess_cycleLife: 'Cycle Life',
+  bess_dimensions: 'Dimensions',
+  bess_dischargeTemp: 'Discharging Temperature',
+  bess_fastCharge: 'Supported Fast-Charge Protocols',
+  bess_fireDetection: 'Fire Detection',
+  bess_fireSuppression: 'Fire Suppression',
+  bess_gridVoltage: 'Rated Grid Voltage',
+  bess_humidity: 'Operating Humidity',
+  bess_installation: 'Installation Type',
+  bess_nominalVoltage: 'Nominal Voltage',
+  bess_optionalFeatures: 'Optional Features',
+  bess_portAc: 'AC Output',
+  bess_portPv: 'PV Input',
+  bess_portUsbA: 'USB-A',
+  bess_portUsbC: 'USB-C',
+  bess_pvInputCurrent: 'Max. Input Current',
+  bess_pvInputPower: 'Max. Input Power',
+  bess_pvInputVoltage: 'Input Voltage Range',
+  bess_ratedBatteryVoltage: 'Rated Battery Voltage',
+  bess_ratedCapacity: 'Rated Capacity',
+  bess_ratedEnergy: 'Rated Energy',
+  bess_ratedPower: 'Rated Power',
+  bess_ratedVoltage: 'Rated Voltage',
+  bess_responseTime: 'Response Time',
+  bess_scalability: 'Scalability',
+  bess_storageTemp: 'Storage Temperature',
+  bess_systemEfficiency: 'System Efficiency',
+  bess_thermalManagement: 'Thermal Management',
+  bess_voltageDeviation: 'Voltage Deviation',
+  bess_voltageRange: 'Operating Voltage Range',
+
+  /* Spec-table section headings */
+  spec_ac: 'AC Parameters',
+  spec_battery: 'Battery',
+  spec_certification: 'Certification',
+  spec_efficiency: 'Efficiency',
+  spec_environment: 'Environment',
+  spec_fireSafety: 'Fire Safety',
+  spec_general: 'General',
+  spec_gridOutput: 'AC Output (On-grid)',
+  spec_offGridOutput: 'AC Output (Off-grid)',
+  spec_optional: 'Optional',
+  spec_ports: 'Input & Output Ports',
+  spec_protection: 'Protection',
+  spec_pvInput: 'PV Input (DC)',
+};
+
+/* Per-language overrides. Empty today: every label falls back to the English
+ * source, matching how the rest of the site's untranslated copy behaves. */
+const SPEC_LABELS_I18N: Partial<Record<Language, Record<string, string>>> = {};
+
+export function specLabel(lang: Language, key: string): string {
+  return SPEC_LABELS_I18N[lang]?.[key] ?? SPEC_LABELS[key] ?? key;
+}
 
 export function getTranslations(lang: Language): TranslationKeys {
   // Per-key fallback so untranslated strings show their English source rather

@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import BoilerDetail from "./pages/BoilerDetail";
 import ProductCategory from "./pages/ProductCategory";
 import SolarModuleDetail from "./pages/SolarModuleDetail";
+import ProductDetail from "./pages/ProductDetail";
 
 /*
  * Vite's BASE_URL is "/" when the site is served from the root of a domain
@@ -24,6 +25,10 @@ function Routes() {
       {/* More specific paths first; the category route matches a single
           segment so the two-segment product routes never reach it. */}
       <Route path="/products/solar-modules/:slug" component={SolarModuleDetail} />
+      {/* Inverter and battery products share one generic detail page; their spec
+          sheets are label/value tables rather than the module's power-step matrix. */}
+      <Route path="/products/inverters/:slug" component={ProductDetail} />
+      <Route path="/products/bess/:slug" component={ProductDetail} />
       <Route path="/products/boiler/:slug" component={BoilerDetail} />
       <Route path="/products/:category" component={ProductCategory} />
       <Route component={NotFound} />

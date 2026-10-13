@@ -97,11 +97,31 @@ const moduleSlugs = await slugsIn(
   null,
 );
 
+/*
+ * The inverter and battery products live in their own module, with their own
+ * markers. They are read separately rather than by one whole-file pass for the
+ * same reason the module slugs are: every product in this file uses a `slug:`
+ * key, so a single unmarked regex would also pick up the category association
+ * values and the shared spec-row keys.
+ */
+const inverterSlugs = await slugsIn(
+  "src/data/solarSystems.ts",
+  "sitemap:inverters",
+  "sitemap:bess",
+);
+const bessSlugs = await slugsIn(
+  "src/data/solarSystems.ts",
+  "sitemap:bess",
+  "sitemap:end",
+);
+
 const urls = [
   "/",
   ...boilerSlugs.map((s) => `/products/boiler/${s}`),
   ...categorySlugs.map((s) => `/products/${s}`),
   ...moduleSlugs.map((s) => `/products/solar-modules/${s}`),
+  ...inverterSlugs.map((s) => `/products/inverters/${s}`),
+  ...bessSlugs.map((s) => `/products/bess/${s}`),
 ];
 
 const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>

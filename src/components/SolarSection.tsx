@@ -108,7 +108,7 @@ export default function SolarSection() {
                   {product.desc}
                 </p>
                 <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-forest">
-                  {product.populated ? t.prod_view_models : t.prod_in_preparation}
+                  {product.populated ? t.prod_view_models : t.prod_view_range}
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </Link>

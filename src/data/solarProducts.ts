@@ -26,8 +26,9 @@ export interface ProductCategory {
 
 /*
  * The five Solar categories, in the order they appear in the nav dropdown.
- * `populated: false` marks a category that currently renders the template
- * state; give it products and flip the flag when its content arrives.
+ * `populated: false` marks a category with no published catalogue yet; its page
+ * shows the range description and a route to sales instead of a product grid.
+ * Flip the flag when its datasheets arrive.
  */
 /* sitemap:categories — scripts/postbuild.mjs reads the slugs between this
    marker and the next one below to build sitemap.xml. Do not repeat either
@@ -44,13 +45,13 @@ export const SOLAR_CATEGORIES: ProductCategory[] = [
     slug: "inverters",
     nameKey: "solar_inverters_title",
     descKey: "solar_inverters_desc",
-    populated: false,
+    populated: true,
   },
   {
     slug: "bess",
     nameKey: "solar_storage_title",
     descKey: "solar_storage_desc",
-    populated: false,
+    populated: true,
   },
   {
     slug: "mounting",

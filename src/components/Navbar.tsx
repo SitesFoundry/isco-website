@@ -22,8 +22,6 @@ type NavChild = {
   label: string;
   /** "#section" scrolls in-page; anything else is a route. */
   href: string;
-  /** Rendered as a small trailing tag, e.g. "In preparation". */
-  note?: string;
 };
 
 type NavItem =
@@ -66,7 +64,6 @@ export default function Navbar() {
       children: SOLAR_CATEGORIES.map((c) => ({
         label: key[c.nameKey] ?? c.nameKey,
         href: `/products/${c.slug}`,
-        note: c.populated ? undefined : t.prod_in_preparation,
       })),
     },
     {
@@ -238,11 +235,6 @@ export default function Navbar() {
                                 className="flex items-center justify-between gap-4 px-5 py-2.5 text-sm text-gray-700 hover:bg-sage hover:text-forest transition-colors"
                               >
                                 <span>{child.label}</span>
-                                {child.note && (
-                                  <span className="text-xs text-muted-foreground shrink-0">
-                                    {child.note}
-                                  </span>
-                                )}
                               </a>
                             ) : (
                               <Link
@@ -251,11 +243,6 @@ export default function Navbar() {
                                 className="flex items-center justify-between gap-4 px-5 py-2.5 text-sm text-gray-700 hover:bg-sage hover:text-forest transition-colors cursor-pointer"
                               >
                                 <span>{child.label}</span>
-                                {child.note && (
-                                  <span className="text-xs text-muted-foreground shrink-0">
-                                    {child.note}
-                                  </span>
-                                )}
                               </Link>
                             )}
                           </div>
@@ -366,11 +353,6 @@ export default function Navbar() {
                             {renderChild(
                               child,
                               'text-sm text-gray-700 hover:text-forest transition-colors',
-                            )}
-                            {child.note && (
-                              <span className="ml-2 text-xs text-muted-foreground">
-                                {child.note}
-                              </span>
                             )}
                           </div>
                         ))}
