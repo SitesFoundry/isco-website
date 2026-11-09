@@ -9,13 +9,11 @@ import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import ScrollToTop from '@/components/ScrollToTop';
-import SEOHead from '@/components/SEOHead';
 import CookieConsent from '@/components/CookieConsent';
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
-      <SEOHead />
       <Navbar />
       <main>
         <HeroSection />

@@ -11,7 +11,9 @@ import {
   ArrowLeft, Check, Shield, Cpu, Settings, Wifi,
   Flame, Droplets, Zap, Award
 } from 'lucide-react';
+import Breadcrumbs from '@/components/Breadcrumbs';
 import {
+  BOILER_PRODUCTS,
   getBoilerBySlug,
   SELLING_POINT_CATEGORIES,
   type CombiVariant,
@@ -49,6 +51,7 @@ export default function BoilerDetail() {
     );
   }
 
+  const otherProducts = BOILER_PRODUCTS.filter((p) => p.slug !== product.slug);
   const isCombi = product.type === 'combi';
   const typeLabel = isCombi ? t.hvac_boiler_combi : t.hvac_boiler_condensing;
   const typeBadgeColor = isCombi ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200';
@@ -70,6 +73,14 @@ export default function BoilerDetail() {
           </Link>
         </div>
       </div>
+
+      <Breadcrumbs
+        items={[
+          { label: t.nav_home, href: '/' },
+          { label: t.nav_hvac, href: '/#hvac' },
+          { label: product.name },
+        ]}
+      />
 
       {/* Hero section */}
       <section className="py-12 lg:py-16">
@@ -341,6 +352,38 @@ export default function BoilerDetail() {
               ))}
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Other models — each product page needs links to its siblings, not just
+          a single way back to the HVAC section on the homepage. */}
+      <section className="py-12 lg:py-16 bg-white border-t border-gray-100">
+        <div className="container">
+          <h2 className="font-heading font-bold text-2xl sm:text-3xl text-foreground text-center mb-10">
+            {t.prod_other_models}
+          </h2>
+          <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {otherProducts.map((other) => (
+              <Link
+                key={other.slug}
+                href={`/products/boiler/${other.slug}`}
+                className="group bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:border-forest/20 transition-all text-center block"
+              >
+                <img
+                  src={other.image}
+                  alt={`ISCO ${other.name}`}
+                  className="h-32 w-auto mx-auto object-contain mb-4"
+                  loading="lazy"
+                />
+                <span className="font-heading font-bold text-xl text-foreground block">
+                  {other.name}
+                </span>
+                <span className="block text-sm text-muted-foreground mt-1">
+                  {other.heroMetric}
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

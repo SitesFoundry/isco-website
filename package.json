@@ -6,7 +6,7 @@
   "description": "ISCO GmbH marketing website",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/postbuild.mjs",
+    "build": "vite build && node scripts/prerender.mjs && node scripts/postbuild.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

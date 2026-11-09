@@ -19,14 +19,16 @@ npm run dev
 npm run build
 ```
 
-Two steps:
+Three steps:
 
-1. `vite build` writes the bundle into `dist/`.
-2. `scripts/postbuild.mjs` completes `dist/`:
-   - copies `index.html` to `404.html`, which is what makes deep links work on
-     GitHub Pages (see below);
-   - generates `sitemap.xml` from the boiler slugs in
-     `src/data/boilerProducts.ts`.
+1. `vite build` writes the client bundle into `dist/`.
+2. `scripts/prerender.mjs` server-renders every route and writes one HTML file
+   per URL, each with its own title, description, canonical, Open Graph tags and
+   JSON-LD, plus `404.html` and `sitemap.xml`. This is what makes deep links
+   return HTTP 200 with real content (see below).
+3. `scripts/postbuild.mjs` verifies the result: every sitemap URL has a file,
+   every page has a unique title and description, every canonical points at its
+   own URL, and the 404 page is `noindex`. It fails the build otherwise.
 
 `dist/` is the only folder that gets deployed. It is generated in CI and is not
 committed.
@@ -76,30 +78,35 @@ With records for both the apex and `www`, GitHub redirects the apex to
 
 ## Deep links and `404.html`
 
-GitHub Pages answers any path that is not a real file with the **contents of
-`404.html`** and HTTP status **404**. `scripts/postbuild.mjs` therefore publishes
-a copy of `index.html` as `404.html`, so a path such as
-`/products/boiler/olympia` boots the app, which then routes it client-side.
+Every route now exists on disk as `dist/<path>/index.html`, so
+`/products/boiler/olympia` is served by GitHub Pages as an ordinary file: HTTP
+200, with that product's own metadata and prerendered content.
 
-The trade-off is the status code: those responses are 404 even though the page
-renders correctly, and crawlers see that. See "SEO status" below.
+`404.html` only handles genuinely unknown paths. GitHub Pages serves it with
+HTTP 404, it carries `noindex, follow`, and the app still routes client-side for
+things like a mistyped product slug.
 
 ## Project layout
 
 | Path | Purpose |
 | --- | --- |
-| `index.html` | The single HTML entry point: metadata, Open Graph, fonts |
-| `src/main.tsx` | Mounts the app |
+| `index.html` | The document shell: fonts, icons, and the `seo:start` / `seo:end` block the prerenderer replaces |
+| `src/main.tsx` | Mounts the app; removes the prerender-only style first |
 | `src/App.tsx` | Providers and routes; sets the router base |
+| `src/lib/seo.ts` | Per-route titles, descriptions, canonicals and JSON-LD — the single source for both the prerenderer and the client |
+| `src/components/SEOHead.tsx` | Updates the head after an in-app navigation |
 | `src/lib/i18n.ts` | All copy, in six languages (de, en, ru, es, fr, it) |
 | `src/lib/asset.ts` | Prefixes `public/` paths with the deploy base |
+| `src/data/solarProducts.ts` | Solar categories and module datasheets |
+| `src/data/solarSystems.ts` | Inverter and battery catalogues |
 | `src/data/boilerProducts.ts` | Boiler catalogue: specs, features, images |
-| `src/components/` | Page sections (Hero, About, Solar, HVAC, Why, Contact, …) |
-| `src/pages/` | `Home`, `BoilerDetail`, `NotFound` |
+| `src/components/` | Page sections (Hero, About, Solar, HVAC, Why, Contact, …) and breadcrumbs |
+| `src/pages/` | `Home`, `ProductCategory`, `SolarModuleDetail`, `ProductDetail`, `BoilerDetail`, `NotFound` |
 | `src/hooks/useInView.ts` | Scroll-reveal; sections start at opacity 0 |
-| `public/images/` | The eleven content images; committed, never hot-linked |
+| `public/images/` | The content images; committed, never hot-linked |
 | `public/robots.txt` | Allows all crawlers, points at the sitemap |
-| `scripts/postbuild.mjs` | Completes `dist/` after the Vite build |
+| `scripts/prerender.mjs` | Renders every route to static HTML, writes the sitemap and 404 |
+| `scripts/postbuild.mjs` | Verifies titles, descriptions, canonicals and sitemap coverage |
 
 ## Images
 
@@ -118,30 +125,66 @@ symptom is specific and easy to miss, because every structural check still
 passes — the file exists and the URL resolves, just not there. The hero renders
 as a bare gradient with a broken-image icon in the corner.
 
+## Fonts
+
+The Outfit and Source Sans 3 files are self-hosted in `src/assets/fonts/`, with
+`src/fonts.css` declaring the faces. Vite fingerprints them and rewrites the
+`url()`s for the deploy base, so they work at the domain root and under a
+project-site sub-path alike.
+
+The site used to load both families from Google Fonts, which meant every visit
+made requests to two third-party hosts before it could render text — and, for a
+German company, the GDPR question German courts have already ruled on. Only the
+Latin, Latin Extended and Cyrillic subsets are kept, because those are the four
+scripts the six languages use. The browser still downloads only the subsets a
+page's characters need.
+
 ## Contact form
 
-`src/components/ContactSection.tsx` posts to `/api/contact` through
-`src/lib/api.ts`.
+`src/components/ContactSection.tsx` posts through `src/lib/api.ts` to Formspree
+(`f/mzezgbwe`), which is a hosted endpoint rather than a function in this
+repository. The production domain was tested end-to-end.
 
-**This endpoint does not exist on GitHub Pages.** It was served by a Cloudflare
-Pages Function in the previous deployment, which this repository does not
-include. Until a replacement is wired up, the form renders and validates but
-every submission fails. See the handover notes for the decision.
+The free tier covers 50 submissions per month. Beyond that the endpoint stops
+accepting mail **without telling the visitor** — the form still reports success.
+Check the Formspree dashboard monthly.
 
 ## SEO status
 
-The site is a client-side rendered SPA, inherited from the Manus build. Known
-gaps, deliberately deferred:
+Every route is prerendered at build time:
 
-- One HTML file serves every route, so per-page titles, descriptions and
-  structured data are injected by JavaScript (`src/components/SEOHead.tsx`)
-  rather than present in the markup.
-- Deep links return HTTP 404 (see above).
-- All six languages share one URL; the language is client-side state, so the
-  translations are not separately indexable.
-- The previous deployment's `robots.txt` advertised a `/sitemap.xml` that
-  returned `index.html`. `scripts/postbuild.mjs` now generates a real sitemap,
-  so that reference resolves.
+- **One document per URL.** `/`, six category pages, four solar modules, five
+  inverters, four batteries and four boilers: 24 URLs, each with its own title,
+  description, canonical, Open Graph card and readable content in the markup.
+- **Structured data** in the document itself: `Organization`, `WebSite` and
+  `LocalBusiness` on the homepage; `Product` and `BreadcrumbList` on product
+  pages; `CollectionPage` and `BreadcrumbList` on category pages.
+- **Deep links return HTTP 200**, because each route is a real file.
+- **`sitemap.xml`** is generated from the same route list that is written to
+  disk, so it cannot advertise a page that does not exist.
+- **Unknown paths** return HTTP 404 with `noindex`.
+- **In-app navigation** updates the head from the same metadata module
+  (`src/lib/seo.ts`), so a link shared after browsing previews the page the
+  visitor is actually on.
+
+Still open:
+
+- All six languages share one URL; the language is client-side state, so only
+  the English version is indexable. Language-prefixed URLs (`/de/…`) with
+  `hreflang` were considered and deliberately not added — product copy is
+  largely English and the catalogue is small.
+- `solar_panels_desc` in `src/lib/i18n.ts` mentions flexible and foldable
+  modules that are not in the catalogue yet. That is intentional: those ranges
+  are planned. The efficiency figure was corrected from 25%+ to 23%+, which is
+  what the published modules reach (23.69% peak).
+
+## Verifying SEO
+
+`npm run build` ends with automated checks, but they only prove the markup.
+To see what a crawler and a visitor actually get, use `_audit/seo-probe.mjs`
+against a local server: it reads the rendered head, clicks an in-app link to
+confirm the head follows the navigation, and reloads with JavaScript disabled
+to confirm the prerendered content is readable without the app.
 
 ## Verifying a change
 
@@ -158,6 +201,7 @@ during the migration live outside this repository in the parent folder's
 | `pages-sim-server.mjs` | Static server that reproduces the GitHub Pages 404 fallback |
 | `fullpage-shot.mjs` | Full-page screenshot over the DevTools Protocol |
 | `scroll-probe.mjs` | Scrolls one viewport at a time, captures each, and reports section opacity |
+| `seo-probe.mjs` | Reads the rendered head, exercises an in-app navigation, and reloads with JavaScript disabled |
 
 Two traps these tools exist to catch:
 

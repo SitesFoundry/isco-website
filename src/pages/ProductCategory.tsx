@@ -11,6 +11,7 @@ import { useRoute, Link } from 'wouter';
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import Breadcrumbs from '@/components/Breadcrumbs';
 import { SOLAR_CATEGORIES, SOLAR_MODULES, findCategory } from '@/data/solarProducts';
 import { productsForCategory, type Product } from '@/data/solarSystems';
 import { specLabel, type Language } from '@/lib/i18n';
@@ -78,6 +79,10 @@ export default function ProductCategory() {
           </Link>
         </div>
       </div>
+
+      <Breadcrumbs
+        items={[{ label: t.nav_home, href: '/' }, { label: name }]}
+      />
 
       {/* Header */}
       <section className="py-12 lg:py-16">
@@ -223,7 +228,7 @@ function ProductGrid({ cards }: { cards: Card[] }) {
                 <div className="h-44 flex items-center justify-center mb-5">
                   <img
                     src={c.image}
-                    alt={`ISCO ${c.model}`}
+                    alt={`ISCO ${c.model}${c.variant ? ` ${c.variant}` : ''}`}
                     className="max-h-44 w-auto object-contain"
                     loading="lazy"
                   />

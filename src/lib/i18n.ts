@@ -325,7 +325,7 @@ const translations: Record<Language, Partial<TranslationKeys>> = {
     solar_title: 'Solar-Energielösungen',
     solar_subtitle: 'Komplette Photovoltaik-Systeme für Privat- und Gewerbekunden',
     solar_panels_title: 'Solarmodule',
-    solar_panels_desc: 'Hocheffiziente TopCon- & PERC-monokristalline Module in vier Varianten: Standard, Vollschwarz, flexibel und faltbar — von führenden Herstellern mit bis zu 25%+ Wirkungsgrad.',
+    solar_panels_desc: 'Hocheffiziente TopCon- & PERC-monokristalline Module in vier Varianten: Standard, Vollschwarz, flexibel und faltbar — von führenden Herstellern mit bis zu 23%+ Wirkungsgrad.',
     solar_inverters_title: 'Wechselrichter',
     solar_inverters_desc: 'Hybridwechselrichter für die Kombination von Solar-, Batterie- und Netzstrom, mit Inselfunktion für netzunabhängige Systeme.',
     solar_storage_title: 'BESS',
@@ -485,7 +485,7 @@ const translations: Record<Language, Partial<TranslationKeys>> = {
     nav_contact: 'Contact',
     nav_products: 'Products',
 
-    hero_title: 'Your Complete Energy Solutions Partner',
+    hero_title: 'Your Complete Solar & HVAC Energy Solutions Partner',
     hero_subtitle: 'ISCO GmbH delivers premium Solar and HVAC products for sustainable energy and optimal comfort across Europe.',
     hero_cta_solar: 'Explore Solar Products',
     hero_cta_contact: 'Get in Touch',
@@ -506,7 +506,7 @@ const translations: Record<Language, Partial<TranslationKeys>> = {
     solar_title: 'Solar Energy Solutions',
     solar_subtitle: 'Complete photovoltaic systems for residential and commercial applications',
     solar_panels_title: 'Solar Modules',
-    solar_panels_desc: 'High-efficiency TopCon & PERC monocrystalline modules available in four types: standard, all-black, flexible, and foldable — from leading manufacturers with up to 25%+ efficiency.',
+    solar_panels_desc: 'High-efficiency TopCon & PERC monocrystalline modules available in four types: standard, all-black, flexible, and foldable — from leading manufacturers with up to 23%+ efficiency.',
     solar_inverters_title: 'Inverters',
     solar_inverters_desc: 'Hybrid inverters that seamlessly combine solar, battery, and grid power sources, with off-grid output for standalone systems.',
     solar_storage_title: 'BESS',
@@ -775,7 +775,7 @@ const translations: Record<Language, Partial<TranslationKeys>> = {
     solar_title: 'Солнечные энергетические решения',
     solar_subtitle: 'Комплексные фотоэлектрические системы для жилых и коммерческих объектов',
     solar_panels_title: 'Солнечные модули',
-    solar_panels_desc: 'Высокоэффективные монокристаллические модули TopCon и PERC четырёх типов: стандартные, полностью чёрные, гибкие и складные — от ведущих производителей с КПД до 25%+.',
+    solar_panels_desc: 'Высокоэффективные монокристаллические модули TopCon и PERC четырёх типов: стандартные, полностью чёрные, гибкие и складные — от ведущих производителей с КПД до 23%+.',
     solar_inverters_title: 'Инверторы',
     solar_inverters_desc: 'Гибридные инверторы для комбинирования солнечной, аккумуляторной и сетевой энергии, с автономным режимом для изолированных систем.',
     solar_storage_title: 'BESS',
@@ -956,7 +956,7 @@ const translations: Record<Language, Partial<TranslationKeys>> = {
     solar_title: 'Soluciones de energía solar',
     solar_subtitle: 'Sistemas fotovoltaicos completos para aplicaciones residenciales y comerciales',
        solar_panels_title: 'Módulos solares',
-    solar_panels_desc: 'Módulos monocristalinos TopCon y PERC de alta eficiencia en cuatro tipos: estándar, totalmente negro, flexible y plegable — de fabricantes líderes con hasta 25%+ de eficiencia.',
+    solar_panels_desc: 'Módulos monocristalinos TopCon y PERC de alta eficiencia en cuatro tipos: estándar, totalmente negro, flexible y plegable — de fabricantes líderes con hasta 23%+ de eficiencia.',
     solar_inverters_title: 'Inversores',
     solar_inverters_desc: 'Inversores híbridos que combinan energía solar, batería y red eléctrica, con salida aislada para sistemas autónomos.',
     solar_storage_title: 'BESS',
@@ -1137,7 +1137,7 @@ const translations: Record<Language, Partial<TranslationKeys>> = {
     solar_title: 'Solutions d\'énergie solaire',
     solar_subtitle: 'Systèmes photovoltaïques complets pour applications résidentielles et commerciales',
     solar_panels_title: 'Modules solaires',
-    solar_panels_desc: 'Modules monocristallins TopCon et PERC haute efficacité en quatre types : standard, tout noir, flexible et pliable — de fabricants leaders avec jusqu\'\u00e0 25%+ de rendement.',
+    solar_panels_desc: 'Modules monocristallins TopCon et PERC haute efficacité en quatre types : standard, tout noir, flexible et pliable — de fabricants leaders avec jusqu\'\u00e0 23%+ de rendement.',
     solar_inverters_title: 'Onduleurs',
     solar_inverters_desc: 'Onduleurs hybrides combinant énergie solaire, batterie et réseau électrique, avec sortie autonome pour systèmes isolés.',
     solar_storage_title: 'BESS',
@@ -1318,7 +1318,7 @@ const translations: Record<Language, Partial<TranslationKeys>> = {
     solar_title: 'Soluzioni di energia solare',
     solar_subtitle: 'Sistemi fotovoltaici completi per applicazioni residenziali e commerciali',
     solar_panels_title: 'Moduli fotovoltaici',
-    solar_panels_desc: 'Moduli monocristallini TopCon e PERC ad alta efficienza in quattro tipi: standard, tutto nero, flessibile e pieghevole — dai principali produttori con efficienza fino al 25%+.',
+    solar_panels_desc: 'Moduli monocristallini TopCon e PERC ad alta efficienza in quattro tipi: standard, tutto nero, flessibile e pieghevole — dai principali produttori con efficienza fino al 23%+.',
     solar_inverters_title: 'Inverter',
     solar_inverters_desc: 'Inverter ibridi che combinano energia solare, batteria e rete elettrica, con uscita off-grid per sistemi autonomi.',
     solar_storage_title: 'BESS',
@@ -1622,6 +1622,9 @@ export function getTranslations(lang: Language): TranslationKeys {
 }
 
 export function detectBrowserLanguage(): Language {
+  // Undefined while the site is prerendered in Node; English is the default
+  // document language there, and the browser re-resolves it on mount.
+  if (typeof navigator === 'undefined') return 'en';
   const browserLang = navigator.language || (navigator as any).userLanguage || 'en';
   const langCode = browserLang.split('-')[0].toLowerCase();
   const supported: Language[] = ['de', 'en', 'ru', 'es', 'fr', 'it'];
@@ -1632,6 +1635,7 @@ export function detectBrowserLanguage(): Language {
 }
 
 export function getSavedLanguage(): Language | null {
+  if (typeof localStorage === 'undefined') return null;
   try {
     const saved = localStorage.getItem('isco-lang');
     if (saved && ['de', 'en', 'ru', 'es', 'fr', 'it'].includes(saved)) {
@@ -1642,6 +1646,7 @@ export function getSavedLanguage(): Language | null {
 }
 
 export function saveLanguage(lang: Language): void {
+  if (typeof localStorage === 'undefined') return;
   try {
     localStorage.setItem('isco-lang', lang);
   } catch {}

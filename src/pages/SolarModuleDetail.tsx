@@ -30,6 +30,7 @@ import {
   COMMON_SPECS,
   findSolarModule,
 } from '@/data/solarProducts';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export default function SolarModuleDetail() {
   const { t } = useLanguage();
@@ -130,6 +131,14 @@ export default function SolarModuleDetail() {
           </Link>
         </div>
       </div>
+
+      <Breadcrumbs
+        items={[
+          { label: t.nav_home, href: '/' },
+          { label: t.solar_panels_title, href: '/products/solar-modules' },
+          { label: title },
+        ]}
+      />
 
       {/* Hero */}
       <section className="py-12 lg:py-16">

@@ -1,41 +1,90 @@
 <!doctype html>
 <html lang="en">
-
   <head>
     <meta charset="UTF-8" />
+    <!-- `maximum-scale` intentionally absent: it blocks pinch-zoom on phones. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!--
+      seo:start — scripts/prerender.mjs replaces everything between these two
+      markers with the metadata for the route being written. What you see here
+      is the fallback for `vite dev` and for any build step that runs before the
+      prerenderer; do not add a second title, description or canonical below.
+    -->
+    <title>ISCO GmbH | Solar Modules, Inverters &amp; HVAC Systems</title>
     <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>ISCO GmbH - Solar &amp; HVAC Solutions</title>
-    <meta name="description" content="ISCO GmbH - Your trusted partner for Solar Energy and HVAC solutions in Europe. Solar modules, inverters, heat pumps, gas boilers and more." />
-    <meta name="keywords" content="ISCO GmbH, solar modules, inverters, heat pump, gas boiler, HVAC, renewable energy, Frankfurt, Germany, Solarmodule, Wechselrichter, Wärmepumpe, Gaskessel" />
-    <link rel="canonical" href="https://www.iscogmbh.com" />
+      name="description"
+      content="ISCO GmbH in Frankfurt supplies TOPCon solar modules, hybrid inverters, battery storage and gas boilers across Europe — full datasheets and direct contact." />
+    <link rel="canonical" href="https://www.iscogmbh.com/" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="ISCO GmbH" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="ISCO GmbH" />
+    <meta property="og:title" content="ISCO GmbH | Solar Modules, Inverters &amp; HVAC Systems" />
+    <meta
+      property="og:description"
+      content="ISCO GmbH in Frankfurt supplies TOPCon solar modules, hybrid inverters, battery storage and gas boilers across Europe — full datasheets and direct contact." />
+    <meta property="og:url" content="https://www.iscogmbh.com/" />
+    <meta property="og:image" content="https://www.iscogmbh.com/images/hero-banner.webp" />
+    <meta property="og:image:alt" content="ISCO GmbH solar and HVAC solutions" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ISCO GmbH | Solar Modules, Inverters &amp; HVAC Systems" />
+    <meta
+      name="twitter:description"
+      content="ISCO GmbH in Frankfurt supplies TOPCon solar modules, hybrid inverters, battery storage and gas boilers across Europe — full datasheets and direct contact." />
+    <meta name="twitter:image" content="https://www.iscogmbh.com/images/hero-banner.webp" />
+    <!-- seo:end -->
+
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#1a5c3a" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <meta name="robots" content="index, follow" />
-    <meta name="author" content="ISCO GmbH" />
-    <meta name="geo.region" content="DE-HE" />
-    <meta name="geo.placename" content="Frankfurt Am Main" />
-    <meta property="og:title" content="ISCO GmbH - Solar & HVAC Solutions" />
-    <meta property="og:description" content="Leading provider of Solar and HVAC solutions in Europe." />
-    <meta property="og:url" content="https://www.iscogmbh.com" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="ISCO GmbH" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="ISCO GmbH - Solar & HVAC Solutions" />
-    <meta name="twitter:description" content="Leading provider of Solar and HVAC solutions in Europe." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+
+    <!--
+      The prerendered markup is English. A returning visitor whose language is
+      not English would see it for the few hundred milliseconds before React
+      mounts and switches language, so it is hidden until then. Crawlers do not
+      run this script and therefore still read the prerendered content.
+    -->
+    <script>
+      (function () {
+        try {
+          var supported = ["de", "ru", "es", "fr", "it"];
+          var saved = localStorage.getItem("isco-lang");
+          var language = saved || (navigator.language || "en").slice(0, 2).toLowerCase();
+          if (language !== "en" && supported.indexOf(language) !== -1) {
+            document.documentElement.setAttribute("data-prerender-language", "pending");
+          }
+        } catch (error) {
+          /* private mode: leave the English prerender visible */
+        }
+      })();
+    </script>
+    <style id="prerender-visible">
+      /*
+       * The reveal animations start their sections at opacity 0 and only turn
+       * them on once an IntersectionObserver fires. That is correct in the
+       * browser, but in prerendered HTML it would leave most of the page
+       * invisible to a crawler that does not run scripts. This sheet restores
+       * the final state; main.tsx removes it before React mounts, so the
+       * animations run exactly as before.
+       */
+      #root [style*="opacity:0"] {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      html[data-prerender-language="pending"] #root {
+        visibility: hidden;
+      }
+    </style>
+
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
-
 </html>

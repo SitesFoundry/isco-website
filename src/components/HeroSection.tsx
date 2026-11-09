@@ -27,6 +27,8 @@ export default function HeroSection() {
           alt="Sustainable energy community with solar panels"
           className="w-full h-full object-cover"
           loading="eager"
+          fetchPriority="high"
+          decoding="async"
         />
         {/* Gradient overlays */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#0D3B2E]/85 via-[#0D3B2E]/60 to-[#0D3B2E]/30" />

@@ -1,6 +1,7 @@
 import NotFound from "@/pages/NotFound";
 import { Route, Router as WouterRouter, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
+import SEOHead from "./components/SEOHead";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import Home from "./pages/Home";
@@ -36,20 +37,28 @@ function Routes() {
   );
 }
 
-function Router() {
+function Router({ ssrPath }: { ssrPath?: string }) {
   return (
-    <WouterRouter base={BASE}>
+    /*
+     * `ssrPath` is only passed while the site is prerendered in Node: there is
+     * no window.location to read, so the route has to be handed in. In the
+     * browser it stays undefined and wouter reads the address bar.
+     */
+    <WouterRouter base={BASE} ssrPath={ssrPath}>
+      {/* Mounted once, inside the router: every route, including one reached
+          without a page load, gets its own metadata. */}
+      <SEOHead />
       <Routes />
     </WouterRouter>
   );
 }
 
-function App() {
+function App({ ssrPath }: { ssrPath?: string } = {}) {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <LanguageProvider>
-          <Router />
+          <Router ssrPath={ssrPath} />
         </LanguageProvider>
       </ThemeProvider>
     </ErrorBoundary>

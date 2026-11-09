@@ -22,6 +22,7 @@ import {
   type Product,
 } from '@/data/solarSystems';
 import { specLabel } from '@/lib/i18n';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export default function ProductDetail() {
   const { t, language } = useLanguage();
@@ -79,6 +80,14 @@ export default function ProductDetail() {
           </Link>
         </div>
       </div>
+
+      <Breadcrumbs
+        items={[
+          { label: t.nav_home, href: '/' },
+          { label: categoryName, href: `/products/${categorySlug}` },
+          { label: `${product.model} ${product.variant}`.trim() },
+        ]}
+      />
 
       {/* Hero */}
       <section className="py-10 lg:py-14">

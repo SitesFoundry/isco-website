@@ -1,128 +1,96 @@
-import { absoluteUrl, SITE_ORIGIN } from "@/lib/asset";
 /*
- * SEO: Structured data (JSON-LD), Open Graph meta tags
- * Injected via useEffect to dynamically update head
+ * Keeps <head> in sync after an in-app navigation.
+ *
+ * The page that arrives from the server already has the right title,
+ * description, canonical and structured data (scripts/prerender.mjs writes them
+ * from src/lib/seo.ts). But this is a single-page app: clicking a product from
+ * the homepage changes the URL without a document load. Before this component
+ * existed, the URL changed and every tag stayed on the homepage's values, so a
+ * shared product link previewed as the homepage and a crawler that rendered the
+ * navigation saw one title for the whole site.
+ *
+ * The values come from the same getSeo() the prerenderer uses, so the two can
+ * never disagree about what a page is about.
  */
 import { useEffect } from 'react';
+import { useLocation } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getPageJsonLd, getSeo } from '@/lib/seo';
+import type { Language } from '@/lib/i18n';
+
+const OG_LOCALES: Record<Language, string> = {
+  de: 'de_DE',
+  en: 'en_US',
+  ru: 'ru_RU',
+  es: 'es_ES',
+  fr: 'fr_FR',
+  it: 'it_IT',
+};
+
+function setMeta(attribute: 'name' | 'property', key: string, content: string) {
+  let element = document.head.querySelector<HTMLMetaElement>(
+    `meta[${attribute}="${key}"]`,
+  );
+  if (!element) {
+    element = document.createElement('meta');
+    element.setAttribute(attribute, key);
+    document.head.appendChild(element);
+  }
+  element.setAttribute('content', content);
+}
 
 export default function SEOHead() {
+  const [location] = useLocation();
   const { language } = useLanguage();
 
   useEffect(() => {
-    // Update lang attribute
-    document.documentElement.lang = language;
+    const seo = getSeo(location);
 
-    // Structured data - Organization
-    const orgSchema = {
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: 'ISCO GmbH',
-      url: SITE_ORIGIN,
-      // Absolute, and a mark that clears Google's 112x112 floor for this field.
-      logo: absoluteUrl('/images/isco-logo-footer.png'),
-      description: 'Leading provider of Solar and HVAC solutions in Europe. Solar modules, inverters, heat pumps, gas boilers and more.',
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Kennedyallee 93',
-        addressLocality: 'Frankfurt Am Main',
-        postalCode: '60596',
-        addressCountry: 'DE',
-      },
-      contactPoint: {
-        '@type': 'ContactPoint',
-        email: 'sales@iscogmbh.com',
-        contactType: 'sales',
-        availableLanguage: ['German', 'English', 'Russian', 'Spanish', 'French', 'Italian'],
-      },
-      sameAs: [],
-    };
+    document.title = seo.title;
+    setMeta('name', 'description', seo.description);
+    setMeta('name', 'robots', seo.robots);
+    setMeta('property', 'og:type', 'website');
+    setMeta('property', 'og:site_name', 'ISCO GmbH');
+    setMeta('property', 'og:title', seo.title);
+    setMeta('property', 'og:description', seo.description);
+    setMeta('property', 'og:url', seo.canonical);
+    setMeta('property', 'og:image', seo.image);
+    setMeta('property', 'og:image:alt', seo.imageAlt);
+    setMeta('property', 'og:locale', OG_LOCALES[language]);
+    setMeta('name', 'twitter:card', 'summary_large_image');
+    setMeta('name', 'twitter:title', seo.title);
+    setMeta('name', 'twitter:description', seo.description);
+    setMeta('name', 'twitter:image', seo.image);
 
-    // Structured data - LocalBusiness
-    const localBusinessSchema = {
-      '@context': 'https://schema.org',
-      '@type': 'LocalBusiness',
-      name: 'ISCO GmbH',
-      image: absoluteUrl('/images/about-company.webp'),
-      url: SITE_ORIGIN,
-      email: 'sales@iscogmbh.com',
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Kennedyallee 93',
-        addressLocality: 'Frankfurt Am Main',
-        postalCode: '60596',
-        addressCountry: 'DE',
-      },
-      priceRange: '$$',
-      openingHoursSpecification: {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        opens: '09:00',
-        closes: '18:00',
-      },
-    };
+    let canonical = document.head.querySelector<HTMLLinkElement>(
+      'link[rel="canonical"]',
+    );
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', seo.canonical);
 
-    // Structured data - WebSite (for AI search / sitelinks)
-    const websiteSchema = {
-      '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      name: 'ISCO GmbH',
-      url: SITE_ORIGIN,
-      inLanguage: ['de', 'en', 'ru', 'es', 'fr', 'it'],
-      description: 'ISCO GmbH - Solar & HVAC Solutions Provider in Europe',
-    };
-
-    // Remove existing schema scripts
-    document.querySelectorAll('script[data-schema]').forEach(el => el.remove());
-
-    // Inject schemas
-    [orgSchema, localBusinessSchema, websiteSchema].forEach((schema, i) => {
+    /*
+     * The prerendered document already contains the same graph. Replace all
+     * JSON-LD rather than adding to it: without this, every page ends up with
+     * two BreadcrumbList and two Product entities once React mounts, and a
+     * renderer-using crawler sees the duplicate.
+     */
+    document
+      .querySelectorAll('script[type="application/ld+json"]')
+      .forEach((el) => el.remove());
+    for (const schema of getPageJsonLd(seo)) {
       const script = document.createElement('script');
       script.type = 'application/ld+json';
-      script.setAttribute('data-schema', `schema-${i}`);
+      script.setAttribute('data-seo-jsonld', '');
       script.textContent = JSON.stringify(schema);
       document.head.appendChild(script);
-    });
+    }
 
-    // Update meta tags
-    const updateMeta = (name: string, content: string, isProperty = false) => {
-      const attr = isProperty ? 'property' : 'name';
-      let el = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement;
-      if (!el) {
-        el = document.createElement('meta');
-        el.setAttribute(attr, name);
-        document.head.appendChild(el);
-      }
-      el.content = content;
-    };
-
-    // Open Graph
-    updateMeta('og:title', 'ISCO GmbH - Solar & HVAC Solutions', true);
-    updateMeta('og:description', 'Leading provider of Solar and HVAC solutions in Europe. Solar modules, inverters, heat pumps, gas boilers and more.', true);
-    updateMeta('og:url', SITE_ORIGIN, true);
-    updateMeta('og:type', 'website', true);
-    // A social crawler fetches this without a page to resolve against, so a
-    // root-relative path yields no preview image at all.
-    updateMeta('og:image', absoluteUrl('/images/hero-banner.webp'), true);
-    updateMeta('og:locale', language === 'de' ? 'de_DE' : language === 'en' ? 'en_US' : language, true);
-    updateMeta('og:site_name', 'ISCO GmbH', true);
-
-    // Twitter Card
-    updateMeta('twitter:card', 'summary_large_image');
-    updateMeta('twitter:title', 'ISCO GmbH - Solar & HVAC Solutions');
-    updateMeta('twitter:description', 'Leading provider of Solar and HVAC solutions in Europe.');
-    updateMeta('twitter:image', absoluteUrl('/images/hero-banner.webp'));
-
-    // Additional SEO meta
-    updateMeta('robots', 'index, follow');
-    updateMeta('author', 'ISCO GmbH');
-    updateMeta('geo.region', 'DE-HE');
-    updateMeta('geo.placename', 'Frankfurt Am Main');
-
-    return () => {
-      document.querySelectorAll('script[data-schema]').forEach(el => el.remove());
-    };
-  }, [language]);
+    document.documentElement.lang = language;
+  }, [location, language]);
 
   return null;
 }
