@@ -11,6 +11,7 @@ import App from "@/App";
 
 export {
   buildHeadHtml,
+  canonicalPath,
   getSeo,
   getStaticRoutes,
   normalizePath,

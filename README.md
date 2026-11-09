@@ -79,8 +79,14 @@ With records for both the apex and `www`, GitHub redirects the apex to
 ## Deep links and `404.html`
 
 Every route now exists on disk as `dist/<path>/index.html`, so
-`/products/boiler/olympia` is served by GitHub Pages as an ordinary file: HTTP
+`/products/boiler/olympia/` is served by GitHub Pages as an ordinary file: HTTP
 200, with that product's own metadata and prerendered content.
+
+**The trailing slash matters.** GitHub Pages answers the slashless
+`/products/boiler/olympia` with a 301 to the slash form. Canonical, `og:url`,
+structured-data URLs and `sitemap.xml` therefore all name the slash form
+(`src/lib/seo.ts` → `canonicalPath()`); naming the redirecting form makes
+Search Console report every submitted URL as "page with redirect".
 
 `404.html` only handles genuinely unknown paths. GitHub Pages serves it with
 HTTP 404, it carries `noindex, follow`, and the app still routes client-side for

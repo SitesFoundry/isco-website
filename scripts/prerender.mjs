@@ -71,8 +71,14 @@ if (!serverBuild || serverBuild.size === 0) {
 }
 
 const server = await import(pathToFileURL(serverEntry).href);
-const { renderApp, getSeo, getStaticRoutes, buildHeadHtml, SITE_ORIGIN } =
-  server;
+const {
+  renderApp,
+  getSeo,
+  getStaticRoutes,
+  buildHeadHtml,
+  canonicalPath,
+  SITE_ORIGIN,
+} = server;
 
 /** One complete document: the shell, with this route's head and body. */
 function assemble(seo, body) {
@@ -127,6 +133,9 @@ for (const route of routes) {
   }
 
   const html = assemble(seo, body);
+  // The file lives at dist/<path>/index.html; the URL that serves it ends with
+  // a slash (GitHub Pages redirects the slashless form), which is what
+  // canonical, the sitemap and og:url all name.
   const file =
     route.path === "/"
       ? shellPath
@@ -160,7 +169,7 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 ${routes
   .map(
     (route) => `  <url>
-    <loc>${SITE_ORIGIN}${route.path === "/" ? "/" : route.path}</loc>
+    <loc>${SITE_ORIGIN}${canonicalPath(route.path)}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${route.changefreq}</changefreq>
     <priority>${route.priority}</priority>

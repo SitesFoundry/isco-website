@@ -21,10 +21,12 @@ const fail = (message) => {
 
 const read = async (path) => readFile(path, "utf8").catch(() => null);
 
-const distFileFor = (pathname) =>
-  pathname === "/"
+const distFileFor = (pathname) => {
+  const clean = pathname.replace(/\/+$/, "");
+  return clean === ""
     ? join(dist, "index.html")
-    : join(dist, pathname.replace(/^\//, ""), "index.html");
+    : join(dist, clean.replace(/^\//, ""), "index.html");
+};
 
 const titleOf = (html) => html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "";
 const canonicalOf = (html) =>

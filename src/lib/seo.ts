@@ -81,6 +81,20 @@ const ORG_EMAIL = "sales@iscogmbh.com";
  */
 const DEPLOY_BASE = import.meta.env.BASE_URL;
 
+/**
+ * The URL GitHub Pages actually serves.
+ *
+ * A directory index (`dist/products/720w/index.html`) is not served at
+ * /products/720w: Pages answers that with a 301 to /products/720w/. Canonical,
+ * og:url, structured-data URLs and the sitemap must therefore name the slash
+ * form — pointing them at the redirecting form invites Search Console to report
+ * every submitted URL as "page with redirect".
+ */
+export function canonicalPath(path: string): string {
+  if (path === "/" || path.endsWith(".html") || path.includes("#")) return path;
+  return `${path.replace(/\/+$/, "")}/`;
+}
+
 const absolute = (pathOrUrl: string): string => {
   if (pathOrUrl.startsWith("http")) return pathOrUrl;
   const path =
@@ -244,7 +258,7 @@ function breadcrumbSchema(items: BreadcrumbItem[]): Record<string, unknown> {
       "@type": "ListItem",
       position: i + 1,
       name: item.name,
-      item: absolute(item.path === "/" ? "/" : item.path),
+      item: absolute(canonicalPath(item.path)),
     })),
   };
 }
@@ -289,7 +303,7 @@ function collectionSchema(input: {
     "@type": "CollectionPage",
     name: input.name,
     description: input.description,
-    url: absolute(input.path),
+    url: absolute(canonicalPath(input.path)),
     isPartOf: { "@id": `${SITE_ORIGIN}/#website` },
     mainEntity: {
       "@type": "ItemList",
@@ -298,7 +312,7 @@ function collectionSchema(input: {
         "@type": "ListItem",
         position: i + 1,
         name: p.name,
-        url: absolute(p.path),
+        url: absolute(canonicalPath(p.path)),
       })),
     },
   };
@@ -343,7 +357,7 @@ function solarModuleSeo(slug: string): PageSeo | null {
     kind: "solar-module",
     title: `${spacedUnits(label)} TOPCon Bifacial Solar Module | ISCO GmbH`,
     description: truncate(description),
-    canonical: absolute(path),
+    canonical: absolute(canonicalPath(path)),
     image: absolute(module.image),
     imageAlt: `ISCO ${label} TOPCon bifacial solar module`,
     robots: "index, follow",
@@ -358,7 +372,7 @@ function solarModuleSeo(slug: string): PageSeo | null {
         sku: module.partNumber,
         description: `${label} bifacial solar module with ${module.powerRange} power range and ${module.peakEfficiency} peak efficiency, for residential and commercial PV systems.`,
         image: module.image,
-        url: absolute(path),
+        url: absolute(canonicalPath(path)),
         category: "Solar Modules",
         properties: [
           { name: "Power range", value: module.powerRange },
@@ -404,7 +418,7 @@ function systemProductSeo(
     description: truncate(
       `${label} (${product.partNumber}): ${product.summary} Key figures: ${keyFacts}.`,
     ),
-    canonical: absolute(path),
+    canonical: absolute(canonicalPath(path)),
     image: absolute(product.image),
     imageAlt: `ISCO ${label}`,
     robots: "index, follow",
@@ -419,7 +433,7 @@ function systemProductSeo(
         sku: product.partNumber,
         description: product.summary,
         image: product.image,
-        url: absolute(path),
+        url: absolute(canonicalPath(path)),
         category: categoryName,
         properties: product.keyFacts.map((f) => ({
           name: specLabel("en", f.labelKey),
@@ -445,7 +459,7 @@ function boilerSeo(slug: string): PageSeo | null {
     description: truncate(
       `${product.name} ${typeLabel.toLowerCase()} from ISCO GmbH with ${product.heroMetric} output (${product.powerRange}). ${product.certifications.join(", ")}; wall-mounted, WiFi-ready, OEM options.`,
     ),
-    canonical: absolute(path),
+    canonical: absolute(canonicalPath(path)),
     image: absolute(product.image),
     imageAlt: `ISCO ${product.name} ${typeLabel}`,
     robots: "index, follow",
@@ -460,7 +474,7 @@ function boilerSeo(slug: string): PageSeo | null {
         sku: product.series,
         description: `${product.name} ${typeLabel} with ${product.powerRange} output for residential heating and hot water. ${product.certifications.join(", ")}.`,
         image: product.image,
-        url: absolute(path),
+        url: absolute(canonicalPath(path)),
         category: "HVAC — Gas Boilers",
         properties: [
           { name: "Power range", value: product.powerRange },
@@ -500,7 +514,7 @@ function categorySeo(slug: string): PageSeo | null {
     kind: "category",
     title: copy.title,
     description: copy.description,
-    canonical: absolute(path),
+    canonical: absolute(canonicalPath(path)),
     image: absolute(copy.image),
     imageAlt: `${copy.title} — ISCO GmbH`,
     robots: "index, follow",
