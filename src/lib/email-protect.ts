@@ -1,10 +1,9 @@
 /**
- * Email anti-scraping protection utilities
- * 
- * Strategy: 
- * 1. Never put real email in HTML source / DOM text directly
- * 2. Use base64 encoding + JS decoding at runtime
- * 3. Only reveal real mailto: link on user click
+ * Email helpers
+ *
+ * The address is kept base64-encoded in the source so the literal string does
+ * not sit in the bundle for naive scrapers, but visitors always see and get the
+ * normal address (sales@iscogmbh.com) - never an "(at)" / "(dot)" spelling.
  */
 
 // Encode email parts separately to avoid pattern matching
@@ -16,29 +15,34 @@ function _d(s: string): string {
 }
 
 /**
- * Get the display version of the email (obfuscated for screen readers / bots)
- * Shows: sales [at] iscogmbh [dot] com
+ * The address as visitors read it: sales@iscogmbh.com
  */
 export function getEmailDisplay(): string {
-  return `${_d(_p1)} [at] ${_d(_p2).replace('.', ' [dot] ')}`;
+  return getEmailReal();
 }
 
 /**
- * Get the real email address (only call on user interaction)
+ * The real email address
  */
 export function getEmailReal(): string {
   return `${_d(_p1)}@${_d(_p2)}`;
 }
 
 /**
- * Open mailto link (only on explicit user click)
+ * Build a mailto: link, optionally with subject and body
  */
-export function openMailto(subject?: string, body?: string): void {
-  const email = getEmailReal();
-  let href = `mailto:${email}`;
+export function getEmailHref(subject?: string, body?: string): string {
+  let href = `mailto:${getEmailReal()}`;
   const params: string[] = [];
   if (subject) params.push(`subject=${encodeURIComponent(subject)}`);
   if (body) params.push(`body=${encodeURIComponent(body)}`);
   if (params.length > 0) href += `?${params.join('&')}`;
-  window.location.href = href;
+  return href;
+}
+
+/**
+ * Open the mail client
+ */
+export function openMailto(subject?: string, body?: string): void {
+  window.location.href = getEmailHref(subject, body);
 }

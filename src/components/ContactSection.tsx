@@ -9,7 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
 import { useInView } from '@/hooks/useInView';
 import { MapPin, Mail, Globe, Send, CheckCircle, Loader2 } from 'lucide-react';
-import { getEmailDisplay, openMailto } from '@/lib/email-protect';
+import { getEmailDisplay, getEmailHref } from '@/lib/email-protect';
 import { submitContact } from '@/lib/api';
 
 const CONTACT_IMG = asset('/images/contact-section.webp');
@@ -42,7 +42,7 @@ export default function ContactSection() {
       icon: Mail,
       title: t.contact_email_title,
       value: getEmailDisplay(),
-      href: '#email',
+      href: getEmailHref(),
       isExternal: false,
       isEmail: true,
     },
@@ -77,11 +77,6 @@ export default function ContactSection() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleEmailClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    openMailto();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -139,8 +134,7 @@ export default function ContactSection() {
             {contactInfo.map((info, i) => (
               <motion.a
                 key={i}
-                href={info.isEmail ? '#email' : info.href}
-                onClick={info.isEmail ? handleEmailClick : undefined}
+                href={info.href}
                 target={info.isExternal ? '_blank' : undefined}
                 rel={info.isExternal ? 'noopener noreferrer' : undefined}
                 initial={{ opacity: 0, y: 15 }}

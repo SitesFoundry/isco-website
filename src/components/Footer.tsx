@@ -2,11 +2,11 @@ import { asset } from "@/lib/asset";
 /*
  * Design: Nordic Clean Energy — Scandinavian Functionalism
  * Footer: Dark forest green background, clean layout
- * Security: Email anti-scraping, no WhatsApp/phone displayed
+ * Security: no WhatsApp/phone displayed; the e-mail is stored encoded in source
  */
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MapPin, Mail, Globe } from 'lucide-react';
-import { getEmailDisplay, openMailto } from '@/lib/email-protect';
+import { getEmailDisplay, getEmailHref } from '@/lib/email-protect';
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -14,11 +14,6 @@ export default function Footer() {
   const handleScroll = (href: string) => {
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const handleEmailClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    openMailto();
   };
 
   return (
@@ -36,13 +31,13 @@ export default function Footer() {
               {t.footer_description}
             </p>
             <div className="flex gap-3">
-              <button
-                onClick={handleEmailClick}
+              <a
+                href={getEmailHref()}
                 className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
-                aria-label="Email"
+                aria-label={`Email ${getEmailDisplay()}`}
               >
                 <Mail className="w-4 h-4" />
-              </button>
+              </a>
               <a
                 href="https://www.iscogmbh.com"
                 className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
@@ -108,12 +103,12 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-gold shrink-0" />
-                <button
-                  onClick={handleEmailClick}
+                <a
+                  href={getEmailHref()}
                   className="text-sm text-white/60 hover:text-gold transition-colors text-left"
                 >
                   {getEmailDisplay()}
-                </button>
+                </a>
               </li>
             </ul>
           </div>
