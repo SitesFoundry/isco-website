@@ -31,6 +31,7 @@ import {
   findSolarModule,
 } from '@/data/solarProducts';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { canonicalPath } from '@/lib/seo';
 
 export default function SolarModuleDetail() {
   const { t } = useLanguage();
@@ -50,7 +51,7 @@ export default function SolarModuleDetail() {
             {t.product_not_found}
           </h1>
           <Link
-            href="/products/solar-modules"
+            href="/products/solar-modules/"
             className="text-forest hover:underline inline-flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" /> {t.prod_back_to_category}
@@ -118,7 +119,7 @@ export default function SolarModuleDetail() {
       <div className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="container py-3 flex items-center justify-between">
           <Link
-            href="/products/solar-modules"
+            href="/products/solar-modules/"
             className="text-forest hover:text-forest/80 inline-flex items-center gap-2 text-sm font-medium transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> {t.prod_back_to_category}
@@ -369,7 +370,7 @@ export default function SolarModuleDetail() {
             {otherModels.map((m) => (
               <Link
                 key={m.slug}
-                href={`/products/solar-modules/${m.slug}`}
+                href={canonicalPath(`/products/solar-modules/${m.slug}`)}
                 className="group bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:border-forest/20 transition-all text-center block cursor-pointer"
               >
                 <img

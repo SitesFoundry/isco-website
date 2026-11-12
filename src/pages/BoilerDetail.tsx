@@ -12,6 +12,7 @@ import {
   Flame, Droplets, Zap, Award
 } from 'lucide-react';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { canonicalPath } from '@/lib/seo';
 import {
   BOILER_PRODUCTS,
   getBoilerBySlug,
@@ -366,7 +367,7 @@ export default function BoilerDetail() {
             {otherProducts.map((other) => (
               <Link
                 key={other.slug}
-                href={`/products/boiler/${other.slug}`}
+                href={canonicalPath(`/products/boiler/${other.slug}`)}
                 className="group bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:border-forest/20 transition-all text-center block"
               >
                 <img

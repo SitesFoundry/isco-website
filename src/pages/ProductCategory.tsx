@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { canonicalPath } from '@/lib/seo';
 import { SOLAR_CATEGORIES, SOLAR_MODULES, findCategory } from '@/data/solarProducts';
 import { productsForCategory, type Product } from '@/data/solarSystems';
 import { specLabel, type Language } from '@/lib/i18n';
@@ -125,7 +126,7 @@ export default function ProductCategory() {
               return (
                 <Link
                   key={c.slug}
-                  href={`/products/${c.slug}`}
+                  href={canonicalPath(`/products/${c.slug}`)}
                   className="group flex items-center justify-between gap-4 bg-gray-50 hover:bg-sage/40 rounded-xl px-5 py-4 border border-gray-100 transition-colors"
                 >
                   <span className="font-medium text-foreground">{cname}</span>
@@ -158,7 +159,7 @@ function cardsFor(
   if (slug === 'solar-modules') {
     return SOLAR_MODULES.map((m) => ({
       key: m.slug,
-      href: `/products/solar-modules/${m.slug}`,
+      href: canonicalPath(`/products/solar-modules/${m.slug}`),
       image: m.image,
       model: m.model,
       variant: m.variant || undefined,
@@ -222,7 +223,7 @@ function ProductGrid({ cards }: { cards: Card[] }) {
               transition={{ duration: 0.5, delay: i * 0.05 }}
             >
               <Link
-                href={c.href}
+                href={canonicalPath(c.href)}
                 className="group bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:border-forest/20 transition-all block h-full cursor-pointer text-center"
               >
                 <div className="h-44 flex items-center justify-center mb-5">

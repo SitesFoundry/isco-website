@@ -7,6 +7,7 @@
  * reachable from exactly one page and left the homepage out of their links.
  */
 import { Link } from 'wouter';
+import { canonicalPath } from '@/lib/seo';
 import { ChevronRight } from 'lucide-react';
 
 export interface Crumb {
@@ -28,7 +29,7 @@ export default function Breadcrumbs({ items }: { items: Crumb[] }) {
               )}
               {item.href && !isLast ? (
                 <Link
-                  href={item.href}
+                  href={canonicalPath(item.href)}
                   className="hover:text-forest transition-colors"
                 >
                   {item.label}

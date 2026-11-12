@@ -16,6 +16,7 @@ import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { ArrowLeft, Check, Zap } from 'lucide-react';
 import { findCategory } from '@/data/solarProducts';
+import { canonicalPath } from '@/lib/seo';
 import {
   findProductIn,
   productsForCategory,
@@ -67,7 +68,7 @@ export default function ProductDetail() {
       <div className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="container py-3 flex items-center justify-between">
           <Link
-            href={`/products/${categorySlug}`}
+            href={canonicalPath(`/products/${categorySlug}`)}
             className="text-forest hover:text-forest/80 inline-flex items-center gap-2 text-sm font-medium transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> {t.prod_back_to_category}
@@ -213,7 +214,7 @@ export default function ProductDetail() {
               {siblings.map((p) => (
                 <Link
                   key={p.slug}
-                  href={`/products/${categorySlug}/${p.slug}`}
+                  href={canonicalPath(`/products/${categorySlug}/${p.slug}`)}
                   className="group bg-gray-50 hover:bg-white rounded-2xl border border-gray-100 hover:border-forest/20 hover:shadow-lg p-5 text-center transition-all"
                 >
                   <img

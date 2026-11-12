@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import { useInView } from '@/hooks/useInView';
 import { Sun, Zap, BatteryCharging, Home, Cable, Lightbulb, ArrowRight } from 'lucide-react';
 import { SOLAR_CATEGORIES } from '@/data/solarProducts';
+import { canonicalPath } from '@/lib/seo';
 
 const SOLAR_IMG = asset('/images/solar-section.webp');
 
@@ -95,7 +96,7 @@ export default function SolarSection() {
               transition={{ duration: 0.5, delay: 0.2 + i * 0.08 }}
             >
               <Link
-                href={`/products/${product.slug}`}
+                href={canonicalPath(`/products/${product.slug}`)}
                 className="group bg-white rounded-2xl p-6 lg:p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-transparent hover:border-gold/30 flex flex-col h-full cursor-pointer"
               >
                 <div className="w-12 h-12 rounded-xl bg-gold/15 flex items-center justify-center mb-5 group-hover:bg-gold/25 transition-colors">

@@ -15,6 +15,7 @@ import { Link } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LANGUAGES, type Language } from '@/lib/i18n';
 import { SOLAR_CATEGORIES } from '@/data/solarProducts';
+import { canonicalPath } from '@/lib/seo';
 import { Menu, X, ChevronDown, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -63,7 +64,7 @@ export default function Navbar() {
       href: '#solar',
       children: SOLAR_CATEGORIES.map((c) => ({
         label: key[c.nameKey] ?? c.nameKey,
-        href: `/products/${c.slug}`,
+        href: canonicalPath(`/products/${c.slug}`),
       })),
     },
     {

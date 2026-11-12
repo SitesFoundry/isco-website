@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { useInView } from '@/hooks/useInView';
 import { Flame, Wind, AirVent, Snowflake, ExternalLink } from 'lucide-react';
 import { Link } from 'wouter';
+import { canonicalPath } from '@/lib/seo';
 
 const HVAC_IMG = asset('/images/hvac-section.webp');
 
@@ -136,7 +137,7 @@ export default function HvacSection() {
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.6 + i * 0.1 }}
               >
-                <Link href={`/products/boiler/${boiler.slug}`} className="group bg-white rounded-2xl p-4 lg:p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-forest/20 text-center block cursor-pointer">
+                <Link href={canonicalPath(`/products/boiler/${boiler.slug}`)} className="group bg-white rounded-2xl p-4 lg:p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-forest/20 text-center block cursor-pointer">
                   <div className="relative bg-gradient-to-b from-gray-50 to-white rounded-xl p-4 mb-4 overflow-hidden">
                     <img
                       src={boiler.src}
